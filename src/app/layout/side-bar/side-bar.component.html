@@ -1,6 +1,14 @@
 <nav class="sidebar">
-    <!-- Menu/items à venir, pour l’instant mock simple -->
-    <ul>
-    <li><a href="#">Accueil</a></li>
-    </ul>
-</nav>
+      <ul>
+        <li
+          class="item"
+          *ngFor="let item of menu"
+          [class.active]="isActive(item.path)"
+          [routerLink]="item.path"
+          routerLinkActive="active"
+        >
+          <span class="icon"><mat-icon>{{ item.icon }}</mat-icon></span>
+          <span class="label">{{ item.labelKey | translate }}</span>
+        </li>
+      </ul>
+    </nav>

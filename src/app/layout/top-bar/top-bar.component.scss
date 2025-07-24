@@ -1,24 +1,32 @@
-.top-bar {
+:host {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  height: 60px;
+  justify-content: flex-end;
   padding: 0 32px;
-  background: #242f3e;
-  color: #fff;
+  height: 56px;
+  background: #fff;
+  box-shadow: 0 2px 8px 0 rgba(35,46,60,0.03);
+  gap: 24px;
 
-  .left {
-    display: flex;
-    align-items: center;
-    .project-title {
-      margin-left: 16px;
-      font-weight: bold;
-      font-size: 1.25rem;
-    }
+  .mat-form-field {
+    margin-right: 16px;
   }
-
-  .right {
+  .right-icons {
     display: flex;
+    gap: 20px;
     align-items: center;
+    font-size: 1.5em;
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #21c87a;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
   }
 }

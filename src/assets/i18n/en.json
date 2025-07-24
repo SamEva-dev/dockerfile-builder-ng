@@ -1,4 +1,16 @@
 
 {
-  "FOOTER": { "COPYRIGHT": "Dockerfile Builder. All rights reserved." }
+  "FOOTER": { "COPYRIGHT": "Dockerfile Builder. All rights reserved." },
+  "MENU": {
+    "ACCUEIL": "Home",
+    "BASE_IMAGE": "Base image",
+    "INSTRUCTION": "Instructions",
+    "CONFIGURATION": "Configuration",
+    "PORT_RESEAU": "Port & Network",
+    "VOLUMES": "Volumes",
+    "UTILISATEURS": "Users",
+    "SECURITE": "Security",
+    "APERCU": "Preview",
+    "EXPORT": "Export"
+  }
 }
