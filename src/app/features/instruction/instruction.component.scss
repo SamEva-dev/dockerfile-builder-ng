@@ -1,0 +1,30 @@
+.split-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  width: 100%;
+  min-height: 100%;
+  align-items: flex-start;
+
+  .feature-pane {
+    flex: 2 1 0;
+    min-width: 0;
+    background: none;
+    // Ajoute padding ici si besoin
+  }
+
+  app-apercu {
+    flex: 1 1 0;
+    min-width: 260px;
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 900px) {
+  .split-layout {
+    flex-direction: column;
+    gap: 16px;
+    .feature-pane, app-apercu { max-width: 100%; }
+    app-apercu { margin-left: 0; }
+  }
+}

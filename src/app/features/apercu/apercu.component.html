@@ -1,1 +1,35 @@
-<p>apercu works!</p>
+
+<div class="dockerfile-preview">
+  <div class="preview-header">
+    <span><mat-icon>visibility</mat-icon> {{ 'BASE_IMAGE.DOCKERFILE_PREVIEW' | translate }}</span>
+    <span class="preview-actions">
+      <button mat-icon-button (click)="copy.emit()"><mat-icon>content_copy</mat-icon></button>
+      <button mat-icon-button (click)="download.emit()"><mat-icon>download</mat-icon></button>
+    </span>
+  </div>
+  <pre class="dockerfile-content">
+{{ content }}
+  </pre>
+</div>
+
+
+<!-- <p-card>
+  <ng-template pTemplate="title">
+    <mat-icon>visibility</mat-icon>
+    {{ 'BASE_IMAGE.DOCKERFILE_PREVIEW' | translate }}
+    <span class="preview-actions" style="float:right">
+      <button mat-icon-button (click)="copy.emit()" [disabled]="!content">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <button mat-icon-button (click)="download.emit()" [disabled]="!content">
+        <mat-icon>download</mat-icon>
+      </button>
+    </span>
+  </ng-template>
+  <pre class="dockerfile-content" *ngIf="content; else empty">
+{{ content }}
+  </pre>
+  <ng-template #empty>
+    <div class="dockerfile-empty">{{ 'BASE_IMAGE.NO_DOCKERFILE' | translate }}</div>
+  </ng-template>
+</p-card> -->

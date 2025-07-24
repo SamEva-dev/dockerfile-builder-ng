@@ -1,1 +1,101 @@
-<p>base-image works!</p>
+<div class="base-image-step">
+  <div class="content-wrapper">
+
+    <!-- COLONNE GAUCHE -->
+    <div class="left-side">
+
+      <!-- Images populaires -->
+      <p-card class="section-card">
+        <ng-template pTemplate="title">
+          <mat-icon>star</mat-icon>
+          {{ 'BASE_IMAGE.POPULAR' | translate }}
+        </ng-template>
+        <div class="popular-list">
+          <p-card
+            *ngFor="let img of popularImages; let i = index"
+            class="image-card"
+            [ngClass]="{ 'selected': selectedPopularIndex === i, 'inactive': customImageName }"
+            (click)="!customImageName && selectPopular(i)"
+          >
+            <ng-template pTemplate="content">
+              <div class="image-title">{{ img.name }}</div>
+              <div class="image-desc">{{ img.desc }}</div>
+              <div class="tags">
+                <span class="tag" *ngFor="let tag of img.tags">{{ tag }}</span>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+      </p-card>
+
+      <!-- Image personnalisée -->
+      <p-card class="section-card">
+        <ng-template pTemplate="title">
+          <mat-icon>search</mat-icon>
+          {{ 'BASE_IMAGE.CUSTOM' | translate }}
+        </ng-template>
+        <div class="form-vertical">
+          <label for="customImage">{{ 'BASE_IMAGE.CUSTOM_NAME' | translate }}</label>
+          <input
+            pInputText
+            id="customImage"
+            [(ngModel)]="customImageName"
+            (input)="onCustomImageNameChange($any($event).target.value)"
+            placeholder="ex: my-custom-image, registry.exemple.com/image"
+            autocomplete="off"
+            variant="filled"
+          />
+        </div>
+      </p-card>
+
+      <!-- Configuration de l'image -->
+      <p-card *ngIf="configSectionVisible" class="section-card">
+        <ng-template pTemplate="title">
+          <mat-icon>settings</mat-icon>
+          {{ 'BASE_IMAGE.IMAGE_CONFIG' | translate }}
+        </ng-template>
+        <div class="form-vertical">
+          <label for="imageTag">{{ 'BASE_IMAGE.TAG' | translate }}</label>
+          
+          <p-select
+            [options]="dynamicTagOptions"
+            [(ngModel)]="selectedTag"
+            id="imageTag"
+            optionLabel="label"
+            (onChange)="onTagChange($event.value)"
+            placeholder="Sélectionner un tag"
+            [showClear]="false"
+            [lang]="true"
+             class="w-full md:w-56"
+          >
+            <ng-template #lang let-option pTemplate="item">
+              {{ option }}
+            </ng-template>
+          </p-select>
+
+          <!-- Champ texte tag custom -->
+          <div *ngIf="selectedTag === 'personnalisé'">
+            <label for="customTag">{{ 'BASE_IMAGE.TAG_PLACEHOLDER' | translate }}</label>
+            <input
+              pInputText
+              id="customTag"
+              [(ngModel)]="customTag"
+              (input)="onCustomTagChange($any($event).target.value)"
+              placeholder="ex: v1.0.0, dev, staging"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <!-- COLONNE DROITE : APERCU DOCKERFILE -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)="onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
+  </div>
+</div>

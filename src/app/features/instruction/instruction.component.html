@@ -1,1 +1,37 @@
-<p>instruction works!</p>
+<div class="split-layout">
+  <div class="feature-pane">
+    <!-- Ici, ta logique/metier de la page Instructions -->
+    <h2>Instructions</h2>
+    <!-- ... -->
+  </div>
+  
+</div>
+<div class="instruction-bg">
+  <div class="hero-section">
+    <h1 [innerHTML]="'INSTRUCTION.HERO_TITLE' | translate"></h1>
+    <p class="subtitle" [innerHTML]="'INSTRUCTION.HERO_SUBTITLE' | translate"></p>
+    <div class="cta-buttons">
+      <button mat-raised-button color="primary">{{ 'INSTRUCTION.CTA_START' | translate }}</button>
+      <button mat-stroked-button color="primary">{{ 'INSTRUCTION.CTA_HELP' | translate }}</button>
+    </div>
+  </div>
+
+  <section class="instructions">
+    <h2>{{ 'INSTRUCTION.STEPS_TITLE' | translate }}</h2>
+    <ol class="steps-list">
+      <li>{{ 'INSTRUCTION.STEP_1' | translate }}</li>
+      <li>{{ 'INSTRUCTION.STEP_2' | translate }}</li>
+      <li>{{ 'INSTRUCTION.STEP_3' | translate }}</li>
+      <li>{{ 'INSTRUCTION.STEP_4' | translate }}</li>
+    </ol>
+  </section>
+
+  <section class="cta-final">
+    <div class="cta-box">
+      <h3 [innerHTML]="'INSTRUCTION.CTA_READY_TITLE' | translate"></h3>
+      <p>{{ 'INSTRUCTION.CTA_READY_DESC' | translate }}</p>
+      <button mat-raised-button color="primary">
+        {{ 'INSTRUCTION.CTA_START' | translate }} &nbsp; <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </section>

@@ -12,5 +12,45 @@
     "SECURITE": "Sécurité",
     "APERCU": "Aperçu",
     "EXPORT": "Export"
+  },
+"HOME": {
+  "BADGE_VERSION": "Docker Builder v1.0",
+  "HERO_TITLE": "Créez vos <span class='accent'>Dockerfile</span> en quelques clics",
+  "HERO_SUBTITLE": "Générateur de Dockerfile professionnel avec interface graphique intuitive.<br>Configurez vos conteneurs Docker sans écrire une ligne de code.",
+  "CTA_PROJECT": "Commencer un projet",
+  "CTA_TEMPLATE": "Charger un template",
+
+  "FEATURES_TITLE": "Tout ce dont vous avez besoin pour Docker",
+  "FEATURES_DESC": "Une suite d'outils complète pour créer, configurer et déployer vos conteneurs Docker",
+
+  "FEATURE_1_TITLE": "Interface intuitive",
+  "FEATURE_1_DESC": "Créez vos Dockerfile avec une interface graphique moderne et conviviale",
+  "FEATURE_2_TITLE": "Génération temps réel",
+  "FEATURE_2_DESC": "Visualisez votre Dockerfile généré en temps réel pendant la configuration",
+  "FEATURE_3_TITLE": "Configuration avancée",
+  "FEATURE_3_DESC": "Gérez la sécurité, les réseaux, volumes et utilisateurs facilement",
+  "FEATURE_4_TITLE": "Export & partage",
+  "FEATURE_4_DESC": "Exportez votre configuration ou partagez-la avec votre équipe",
+
+  "CTA_READY_TITLE": "Prêt à créer votre premier Dockerfile&nbsp;?",
+  "CTA_READY_DESC": "Commencez avec notre assistant guidé et générez votre configuration Docker en quelques minutes.",
+  "CTA_START": "Démarrer maintenant"
+},
+"BASE_IMAGE": {
+    "TITLE": "Choisir l'image de base",
+    "SUBTITLE": "Sélectionnez l'image Docker qui servira de fondation à votre conteneur",
+    "POPULAR": "Images populaires",
+    "CUSTOM": "Image personnalisée",
+    "CUSTOM_NAME": "Nom de l'image",
+    "IMAGE_CONFIG": "Configuration de l'image",
+    "TAG": "Tag de l'image",
+    "TAG_CUSTOM": "Personnalisé...",
+    "TAG_PLACEHOLDER": "Tag personnalisé",
+    "DOCKERFILE_PREVIEW": "Aperçu Dockerfile"
+  },
+  "COMMON": {
+    "BACK": "Retour",
+    "NEXT": "Suivant: Instructions"
   }
+
 }

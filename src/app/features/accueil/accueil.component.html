@@ -1,1 +1,50 @@
-<p>accueil works!</p>
+<div class="home-bg">
+  <div class="hero-section">
+    <div class="badge">
+      <span>{{ 'HOME.BADGE_VERSION' | translate }}</span>
+    </div>
+    <h1 [innerHTML]="'HOME.HERO_TITLE' | translate"></h1>
+    <p class="subtitle" [innerHTML]="'HOME.HERO_SUBTITLE' | translate"></p>
+    <div class="cta-buttons">
+      <button mat-raised-button color="primary">{{ 'HOME.CTA_PROJECT' | translate }}</button>
+      <button mat-stroked-button color="primary">{{ 'HOME.CTA_TEMPLATE' | translate }}</button>
+    </div>
+  </div>
+
+  <section class="features">
+    <h2>{{ 'HOME.FEATURES_TITLE' | translate }}</h2>
+    <p class="features-desc">{{ 'HOME.FEATURES_DESC' | translate }}</p>
+    <div class="feature-list">
+      <div class="feature-item">
+        <span class="icon">📦</span>
+        <h3>{{ 'HOME.FEATURE_1_TITLE' | translate }}</h3>
+        <p>{{ 'HOME.FEATURE_1_DESC' | translate }}</p>
+      </div>
+      <div class="feature-item">
+        <span class="icon">⚡</span>
+        <h3>{{ 'HOME.FEATURE_2_TITLE' | translate }}</h3>
+        <p>{{ 'HOME.FEATURE_2_DESC' | translate }}</p>
+      </div>
+      <div class="feature-item">
+        <span class="icon">🛡️</span>
+        <h3>{{ 'HOME.FEATURE_3_TITLE' | translate }}</h3>
+        <p>{{ 'HOME.FEATURE_3_DESC' | translate }}</p>
+      </div>
+      <div class="feature-item">
+        <span class="icon">🔗</span>
+        <h3>{{ 'HOME.FEATURE_4_TITLE' | translate }}</h3>
+        <p>{{ 'HOME.FEATURE_4_DESC' | translate }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <div class="cta-box">
+      <h3 [innerHTML]="'HOME.CTA_READY_TITLE' | translate"></h3>
+      <p>{{ 'HOME.CTA_READY_DESC' | translate }}</p>
+      <button mat-raised-button color="primary">
+        {{ 'HOME.CTA_START' | translate }} &nbsp; <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </section>
+</div>

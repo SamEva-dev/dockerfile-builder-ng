@@ -1,0 +1,123 @@
+.base-image-step {
+  width: 100%;
+  padding: 2rem 0 0 0;
+  min-height: 100vh;
+  background: #f7fafd;
+
+  .content-wrapper {
+    display: flex;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+    justify-content: center;
+    @media (max-width: 1050px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+  }
+  .left-side {
+    flex: 1.7;
+    min-width: 320px;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .section-card {
+    margin-bottom: 0;
+    box-shadow: 0 2px 12px #0077ee10;
+    border-radius: 12px;
+    .p-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+  }
+  .popular-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px 18px;
+    margin-top: 10px;
+    @media (max-width: 700px) {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+  }
+  .image-card {
+    cursor: pointer;
+    transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: #f7fafd;
+    margin-bottom: 0;
+
+    &:hover:not(.inactive) {
+      box-shadow: 0 0 0 2px #188cff50;
+      border-color: #188cff80;
+      background: #e9f3ff;
+    }
+    &.selected {
+      border: 2px solid #188cff;
+      background: #e6f3ff;
+      box-shadow: 0 0 0 2px #188cff50;
+    }
+    &.inactive {
+      opacity: 0.7;
+      pointer-events: none;
+      filter: grayscale(0.5);
+    }
+    .image-title {
+      font-weight: 600;
+      font-size: 1.04rem;
+      margin-bottom: 2px;
+    }
+    .image-desc {
+      font-size: 0.96rem;
+      color: #4c537a;
+      margin-bottom: 7px;
+    }
+    .tags {
+      display: flex;
+      gap: 6px;
+      .tag {
+        background: #e9f3ff;
+        color: #0176d1;
+        border-radius: 8px;
+        padding: 2px 8px;
+        font-size: 0.86rem;
+        font-weight: 500;
+      }
+    }
+  }
+  .custom-image-form,
+  .image-config-form {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+}
+.form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #123a66;
+    margin-bottom: 3px;
+  }
+  input[pInputText] {
+    width: 100%;
+    min-height: 38px;
+  }
+  p-select {
+    width: 100%;
+  }
+}
