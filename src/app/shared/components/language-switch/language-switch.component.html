@@ -1,12 +1,21 @@
-<mat-form-field appearance="outline" class="lang-switch-form-field">
-      <mat-select
-        [value]="selectedLang.code"
-        (selectionChange)="onLangChange($event.value)"
-        aria-label="Select language"
-      >
-        <mat-option *ngFor="let lang of languages" [value]="lang.code">
-          <span class="flag">{{ lang.flag }}</span>
-          <span class="label">{{ lang.label }}</span>
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+<div class="card flex justify-center">
+<p-select
+      class="lang-select"
+      [options]="languages"
+      optionLabel="label"
+      optionValue="code"
+       placeholder="Select a languages" 
+      [ngModel]="selectedLang"
+      (onChange)="onLangChange($event.value)"
+      inputId="lang-switch"
+      [showClear]="false"
+      [lang]="true" 
+      class="w-full md:w-56">
+      <ng-template #lang let-lang>
+        <div class="flex items-center">
+        <span class="flag">{{ lang.flag }}</span>
+        <span class="label">{{ lang.label }}</span>
+        </div>
+      </ng-template>
+    </p-select>
+</div>

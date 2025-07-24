@@ -1,14 +1,45 @@
-<nav class="sidebar">
-      <ul>
-        <li
-          class="item"
-          *ngFor="let item of menu"
-          [class.active]="isActive(item.path)"
-          [routerLink]="item.path"
-          routerLinkActive="active"
-        >
-          <span class="icon"><mat-icon>{{ item.icon }}</mat-icon></span>
-          <span class="label">{{ item.labelKey | translate }}</span>
-        </li>
-      </ul>
-    </nav>
+<!-- Drawer Overlay pour mobile/tablette -->
+<p-drawer
+  [(visible)]="visible"
+  [modal]="true"
+  [showCloseIcon]="true"
+  position="start"
+  styleClass="drawer-menu"
+  (onHide)="nav.setOverlayOpen(false)"
+  [blockScroll]="true"
+>
+  <ul>
+    <li
+      class="item"
+      *ngFor="let item of menu"
+      [class.active]="isActive(item.path)"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      (click)="onMenuItemClick()"
+    >
+      <span class="icon"><mat-icon>{{ item.icon }}</mat-icon></span>
+      <span class="label">{{ item.labelKey | translate }}</span>
+    </li>
+  </ul>
+</p-drawer>
+
+<!-- Sidebar classique desktop -->
+<nav
+  class="sidebar"
+  [class.collapsed]="nav.collapsed()"
+  [class.hide-on-mobile]="nav.overlayOpen()"
+>
+  <ul>
+    <li
+      class="item"
+      *ngFor="let item of menu"
+      [class.active]="isActive(item.path)"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      (click)="onMenuItemClick()"
+    >
+      <span class="icon"><mat-icon>{{ item.icon }}</mat-icon></span>
+      <span class="label" *ngIf="!nav.collapsed()">{{ item.labelKey | translate }}</span>
+    </li>
+  </ul>
+</nav>

@@ -7,6 +7,27 @@
   display: flex;
   flex-direction: column;
   padding-top: 24px;
+  padding-bottom: 0;
+  z-index: 1002;
+  transition: width .2s;
+  position: relative;
+
+  &.collapsed {
+    width: 60px;
+    ul .item .label { display: none; }
+    ul .item { justify-content: center; }
+  }
+
+  &.overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 240px;
+    box-shadow: 4px 0 16px rgba(40, 50, 60, 0.12);
+    transition: left .3s;
+    z-index: 2002;
+  }
 
   ul {
     list-style: none;
@@ -26,16 +47,8 @@
     border-radius: 8px;
     margin-bottom: 6px;
     cursor: pointer;
-    transition: background .2s;
+    transition: background .2s, color .2s;
     font-weight: 500;
-
-    &.active {
-      color: #21c87a; // Vert pour l’élément actif
-      background: rgba(33, 200, 122, 0.08);
-    }
-    &:hover:not(.active) {
-      background: #f5f8fa;
-    }
     .icon {
       font-size: 1.15em;
       color: inherit;
@@ -44,6 +57,34 @@
     }
     .label {
       color: inherit;
+    }
+    &.active {
+      color: #21c87a;
+      background: rgba(33, 200, 122, 0.08);
+    }
+    &:hover:not(.active) {
+      background: #f5f8fa;
+    }
+  }
+}
+
+// Overlay grisé sur le contenu, affiché si overlayOpen = true
+.sidebar-overlay {
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(36, 47, 62, 0.14);
+  z-index: 2001;
+}
+
+// Responsive (mobile < 900px)
+@media (max-width: 900px) {
+  .sidebar {
+    display: none; // cachée par défaut
+    &.overlay {
+      display: flex;
+      width: 220px;
     }
   }
 }

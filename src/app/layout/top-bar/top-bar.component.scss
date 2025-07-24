@@ -1,32 +1,21 @@
-:host {
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 56px;     // ou la hauteur voulue
+  padding: 0;       // pas de padding sur la barre
+  background: #fff; // couleur si tu veux
+  width: 100%;      // occupe toute la largeur (par défaut)
+}
+
+.left, .right {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 32px;
-  height: 56px;
-  background: #fff;
-  box-shadow: 0 2px 8px 0 rgba(35,46,60,0.03);
-  gap: 24px;
+  gap: 1.2rem;
+  padding-left: 12px;
+}
 
-  .mat-form-field {
-    margin-right: 16px;
-  }
-  .right-icons {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    font-size: 1.5em;
 
-    .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #21c87a;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-  }
+.text-primary {
+    color: #0072F5;
 }

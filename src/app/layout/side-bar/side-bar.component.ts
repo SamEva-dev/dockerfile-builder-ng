@@ -1,22 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MENU_ITEMS } from '../../../core/config/menu.config';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { NavigationService } from '../../../core/services/navigation.service';
+import { DrawerModule } from 'primeng/drawer';
+
 
 @Component({
   selector: 'app-side-bar',
-  imports: [CommonModule, RouterModule, MatIconModule, TranslatePipe],
+  imports: [CommonModule,TranslateModule, RouterModule, MatIconModule, DrawerModule],
   templateUrl: './side-bar.component.html',
   styleUrl: './side-bar.component.scss'
 })
-export class SideBarComponent {
-  menu = MENU_ITEMS;
-    constructor(private router: Router) {}
 
-    isActive(path: string): boolean {
-      return this.router.url.startsWith(path);
+export class SideBarComponent {
+  nav = inject(NavigationService);
+  menu = MENU_ITEMS;
+  visible = false;
+
+  constructor(private router: Router) {}
+
+  isActive(path: string): boolean {
+    return this.router.url.startsWith(path);
+  }
+
+  onMenuItemClick() {
+    if (this.nav.overlayOpen()) {
+      this.nav.setOverlayOpen(false);
     }
+  }
 }
