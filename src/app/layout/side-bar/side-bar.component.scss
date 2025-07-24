@@ -1,0 +1,13 @@
+.sidebar {
+  width: 220px;
+  background: #223048;
+  color: #fff;
+  height: calc(100vh - 120px); // adapte avec top-bar/footer
+  position: sticky;
+  top: 60px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: 16px;
+}
+

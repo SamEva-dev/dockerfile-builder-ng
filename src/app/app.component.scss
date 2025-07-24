@@ -1,0 +1,5 @@
+.main-layout {
+  display: flex;
+  min-height: calc(100vh - 120px); // Ajuste la hauteur selon la taille du top-bar/footer
+  background: #f7f7fa; // couleur de fond neutre
+}
