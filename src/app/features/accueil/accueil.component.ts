@@ -4,10 +4,18 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { MatIconModule } from "@angular/material/icon";
+import { Button, ButtonModule } from "primeng/button";
+import { ButtonGroupModule } from 'primeng/buttongroup';
 
 @Component({
   selector: 'app-accueil',
-  imports: [CommonModule, TranslatePipe, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule, 
+    TranslatePipe, 
+    MatButtonModule, 
+    MatIconModule,
+    ButtonModule,
+    ButtonGroupModule,],
   templateUrl: './accueil.component.html',
   styleUrl: './accueil.component.scss'
 })

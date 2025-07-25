@@ -6,8 +6,14 @@
     <h1 [innerHTML]="'HOME.HERO_TITLE' | translate"></h1>
     <p class="subtitle" [innerHTML]="'HOME.HERO_SUBTITLE' | translate"></p>
     <div class="cta-buttons">
-      <button mat-raised-button color="primary">{{ 'HOME.CTA_PROJECT' | translate }}</button>
-      <button mat-stroked-button color="primary">{{ 'HOME.CTA_TEMPLATE' | translate }}</button>
+      <p-button 
+        label="{{ 'HOME.CTA_PROJECT' | translate }}" 
+        icon="pi pi-arrow-right" 
+        class="btn-blue-right"
+        iconPos="right"/>
+    <p-button 
+        label="{{ 'HOME.CTA_TEMPLATE' | translate }}" 
+        severity="secondary"/>
     </div>
   </div>
 
@@ -42,9 +48,11 @@
     <div class="cta-box">
       <h3 [innerHTML]="'HOME.CTA_READY_TITLE' | translate"></h3>
       <p>{{ 'HOME.CTA_READY_DESC' | translate }}</p>
-      <button mat-raised-button color="primary">
-        {{ 'HOME.CTA_START' | translate }} &nbsp; <mat-icon>arrow_forward</mat-icon>
-      </button>
+      <p-button 
+        label="{{ 'HOME.CTA_START' | translate }}" 
+        icon="pi pi-arrow-right" 
+        class="btn-blue-right"
+        iconPos="right"/>
     </div>
   </section>
 </div>

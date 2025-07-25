@@ -5,6 +5,7 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@import "primeicons/primeicons.css";
 
 :root {
   --body-bg: var(--p-surface-50);
@@ -15,6 +16,8 @@
   --text-color: var(--p-surface-700);
   --overlay-background: #ffffff;
 }
+
+
 
 
 html {
@@ -59,3 +62,59 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   margin-bottom: 1rem;
 }
     
+.btn-blue-right .p-button {
+  background: #0072F5 !important;
+  border-color: #0072F5 !important;
+  color: #fff !important;
+}
+.btn-blue-right .p-button:hover,
+.btn-blue-right .p-button:focus {
+  background: #005ac3 !important; // couleur hover
+  border-color: #005ac3 !important;
+  color: #fff !important;
+}
+ .btn-blue-right .p-button .pi {
+  font-size: 1.1em;
+  margin-left: 0.4em;
+}
+
+/* Bordure seulement */
+.mat-icon-bordered {
+  border: 2px solid #0072F5;
+  border-radius: 50%;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Couleur de l'icône */
+.mat-icon-colored {
+  color: #0072F5 !important;
+}
+.mat-icon-bordered-outline {
+  color: #0072F5; /* couleur de contour */
+  /* PAS de background ni de border classique */
+}
+
+.step-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2.2rem;
+  width: 100%;
+  gap: 14px;
+
+  .nav-btn {
+    min-width: 148px;
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .nav-btn-prev {
+    justify-self: flex-start;
+  }
+  .nav-btn-next {
+    justify-self: flex-end;
+  }
+}
