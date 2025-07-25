@@ -1,1 +1,151 @@
-<p>port-reseau works!</p>
+<div class="port-reseau-step">
+  <div class="step-content">
+    <!-- COLONNE GAUCHE -->
+    <div class="left-side">
+
+      <!-- Exposition des ports -->
+      <p-card class="section-card expose-ports-card">
+        <div class="card-header">
+          <div>
+            <mat-icon class="mat-icon-bordered-outline">lan</mat-icon>
+            <span class="title">{{ 'PORTS.TITLE' | translate }}</span>
+            <div class="subtitle">{{ 'PORTS.DESC' | translate }}</div>
+          </div>
+          <p-button
+            label="{{ 'PORTS.ADD' | translate }}"
+            icon="pi pi-plus"
+            class="add-btn  btn-blue-right"
+            (onClick)="addPort()"
+            styleClass="p-button-primary"
+          ></p-button>
+        </div>
+
+        <ng-container *ngIf="ports.length === 0">
+          <div class="init-content">
+            <mat-icon class="init-icon">lan</mat-icon>
+            <div class="empty-msg">{{ 'PORTS.EMPTY' | translate }}</div>
+            <p-button
+              label="{{ 'PORTS.ADD_FIRST' | translate }}"
+              icon="pi pi-plus"
+              class="first-btn  btn-blue-right"
+              (onClick)="addPort()"
+              styleClass="p-button-primary"
+            ></p-button>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="ports.length > 0">
+          <div class="ports-list">
+            <p-card
+              *ngFor="let port of ports; let i = index"
+              class="port-entry-card"
+            >
+              <div class="port-header">
+                <span class="port-tag">{{ 'PORTS.PORT' | translate }} {{ i + 1 }}</span>
+                
+                <button pButton pRipple type="button" icon="pi pi-trash"
+                class="p-button-text p-button-rounded delete-btn"
+                (click)="removePort(i)"
+                aria-label="Supprimer"
+              ></button>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{ 'PORTS.NUM' | translate }}</label>
+                  <input
+                    pInputText
+                    [(ngModel)]="port.number"
+                    [readonly]="port.isCommon"
+                    placeholder="Port..."
+                    type="number"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>{{ 'PORTS.PROTOCOL' | translate }}</label>
+                  <p-select
+                    [options]="[
+                      {label:'TCP',value:'TCP'},
+                      {label:'UDP',value:'UDP'}
+                    ]"
+                    [(ngModel)]="port.protocol"
+                  ></p-select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>{{ 'PORTS.DESC' | translate }}</label>
+                <input
+                  pInputText
+                  [(ngModel)]="port.description"
+                  placeholder="Description"
+                  [readonly]="port.isCommon"
+                />
+              </div>
+            </p-card>
+          </div>
+        </ng-container>
+      </p-card>
+
+      <!-- Ports communs -->
+      <p-card class="section-card ports-communs-card">
+        <div class="ports-communs-header">{{ 'PORTS.COMMONS' | translate }}</div>
+        <div class="ports-communs-subtitle">{{ 'PORTS.COMMONS_SUB' | translate }}</div>
+        <div class="ports-communs-list">
+          <button
+            *ngFor="let common of commonPorts"
+            type="button"
+            class="common-port-btn btn-blue-right"
+            [class.active]="isCommonActive(common)"
+            (click)="addPort(common)"
+            [disabled]="isCommonActive(common)"
+          >
+            <span class="label">{{ common.label }}</span>
+            <span class="sub">{{ common.sub }}</span>
+          </button>
+        </div>
+      </p-card>
+
+      <!-- Infos réseau -->
+      <p-card class="section-card infos-reseau-card">
+        <div class="info info-blue">
+          <b>EXPOSE vs Port Publishing</b><br>
+          EXPOSE documente les ports mais ne les publie pas.<br>
+          Utilise <b>-p</b> lors de docker run pour les rendre accessibles.
+        </div>
+        <div class="info info-green">
+          <b>Sécurité</b><br>
+          N’expose que les ports nécessaires.<br>
+          Utilisez des ports non privilégiés (&gt; 1024) quand possible.
+        </div>
+        <div class="info info-orange">
+          <b>Protocoles</b><br>
+          TCP est le protocole par défaut. Spécifiez UDP pour les services comme DNS ou streaming.
+        </div>
+      </p-card>
+
+      <div class="bottom-actions">
+        <p-button 
+            label="{{ 'COMMON.BACK_CONFIG' | translate }}" 
+            icon="pi pi-arrow-left"
+            class="nav-btn nav-btn-prev"
+            (click)="onPrevious()"
+            severity="secondary"/>
+        <p-button 
+            label="{{ 'COMMON.NEXT_VOLUMES' | translate }}" 
+            (click)="onNext()"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            class="nav-btn nav-btn-next btn-blue-right"
+            />
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)="onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
+  </div>
+</div>
