@@ -1,1 +1,124 @@
-<p>securite works!</p>
+<div class="security-step">
+  <div class="step-content">
+    <!-- COLONNE GAUCHE -->
+    <div class="left-side">
+
+      <!-- NOTE IMPORTANTE -->
+      <div class="alert-security-red">
+        <mat-icon class="icon">error_outline</mat-icon>
+        <div>
+          <div class="title">{{ 'SECURITY.NOTE_TITLE' | translate }}</div>
+          <div class="desc">{{ 'SECURITY.NOTE_MSG' | translate }}</div>
+        </div>
+      </div>
+
+      <!-- Options de base -->
+      <p-card class="section-card base-options-card">
+        <ng-template pTemplate="title">
+          <mat-icon>security</mat-icon>
+          {{ 'SECURITY.BASE_TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'SECURITY.BASE_DESC' | translate }}</div>
+        <div class="options-list">
+          <p-checkbox [(ngModel)]="readOnlyRoot" binary="true"></p-checkbox>
+          <label>{{ 'SECURITY.READONLY' | translate }}</label>
+          <br>
+          <p-checkbox [(ngModel)]="noNewPrivs" binary="true"></p-checkbox>
+          <label>{{ 'SECURITY.NONEWPRIV' | translate }}</label>
+        </div>
+      </p-card>
+
+      <!-- Capabilities Linux -->
+      <p-card class="section-card caps-card">
+        <ng-template pTemplate="title">
+          <mat-icon>tune</mat-icon>
+          {{ 'SECURITY.CAP_TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'SECURITY.CAP_DESC' | translate }}</div>
+        <div class="cap-list">
+          <div *ngFor="let cap of capabilities; let i = index" class="cap-row">
+            <p-select
+              [options]="capabilityTypes"
+              [(ngModel)]="cap.type"
+              class="cap-type-select"
+            ></p-select>
+            <p-select
+              [options]="capabilityOptions"
+              [(ngModel)]="cap.name"
+              class="cap-name-select"
+              placeholder="{{ 'SECURITY.CAP_SELECT' | translate }}"
+            ></p-select>
+            <button
+              pButton
+              icon="pi pi-trash"
+              class="delete-btn"
+              styleClass="p-button-rounded p-button-text"
+              aria-label="Supprimer"
+              (click)="removeCapability(i)"
+              *ngIf="capabilities.length > 1">
+            </button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <p-button label="{{ 'SECURITY.CAP_ADD' | translate }}" icon="pi pi-plus" (onClick)="addCapability()" class="p-button-info"></p-button>
+        </div>
+      </p-card>
+
+      <!-- Profils de sécurité -->
+      <p-card class="section-card profiles-card">
+        <div class="profiles-title">{{ 'SECURITY.PROFILE_TITLE' | translate }}</div>
+        <div class="profiles-desc">{{ 'SECURITY.PROFILE_DESC' | translate }}</div>
+        <div class="profiles-list">
+          <div class="profile-row">
+            <label>Profil Seccomp</label>
+            <input pInputText [(ngModel)]="seccomp" placeholder="default profil seccomp"/>
+          </div>
+          <div class="profile-row">
+            <label>Profil AppArmor</label>
+            <input pInputText [(ngModel)]="apparmor" placeholder="profil apparmor"/>
+          </div>
+          <div class="profile-row">
+            <label>Options SELinux</label>
+            <input pInputText [(ngModel)]="selinux" placeholder="option selinux"/>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Recommandations sécurité -->
+      <p-card class="section-card recommendations-card">
+        <div class="rec-title">{{ 'SECURITY.RECO_TITLE' | translate }}</div>
+        <div class="rec-desc">{{ 'SECURITY.RECO_DESC' | translate }}</div>
+        <div class="rec-tip rec-green">
+          <b>{{ 'SECURITY.RECO_PRIV' | translate }}</b><br>
+          {{ 'SECURITY.RECO_PRIV_DESC' | translate }}
+        </div>
+        <div class="rec-tip rec-blue">
+          <b>{{ 'SECURITY.RECO_FS' | translate }}</b><br>
+          {{ 'SECURITY.RECO_FS_DESC' | translate }}
+        </div>
+        <div class="rec-tip rec-orange">
+          <b>{{ 'SECURITY.RECO_AUDIT' | translate }}</b><br>
+          {{ 'SECURITY.RECO_AUDIT_DESC' | translate }}
+        </div>
+      </p-card>
+
+      <div class="bottom-actions">
+        <button pButton type="button" class="p-button-text">
+          {{ 'COMMON.BACK_USER' | translate }}
+        </button>
+        <button pButton type="button" class="p-button-primary">
+          {{ 'COMMON.NEXT_REVIEW' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- COLONNE DROITE -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)="onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
+  </div>
+</div>
