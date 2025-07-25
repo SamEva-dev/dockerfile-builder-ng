@@ -1,0 +1,83 @@
+.user-step {
+  width: 100%;
+  min-height: 100vh;
+  background: #f7fafd;
+  .step-content {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+    @media (max-width: 1050px) { flex-direction: column; }
+  }
+  .left-side {
+    flex: 1.7;
+    min-width: 340px;
+    max-width: 540px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .right-side {
+    flex: 2.1;
+    min-width: 350px;
+    max-width: 650px;
+  }
+  .alert-security {
+    background: #fff7ed;
+    border: 1.5px solid #f3c893;
+    border-radius: 12px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 18px 22px;
+    margin-bottom: 15px;
+    .icon { color: #e1911b; font-size: 2rem; margin-right: 5px; }
+    .title { color: #c36a06; font-weight: 600; font-size: 1.17rem; margin-bottom: 2px;}
+    .desc .red { color: #b03400; font-weight: 600;}
+  }
+  .section-card {
+    box-shadow: 0 2px 12px #0077ee10;
+    border-radius: 14px;
+    margin-bottom: 0;
+    .subtitle { color: #496ab1; font-size: 1rem; margin-bottom: 10px; }
+    .switch-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+    }
+    .user-suggestions {
+      margin-top: 8px;
+      display: flex; gap: 8px;
+      .suggest-btn {
+        background: #e3e8f5;
+        color: #1756ab;
+        border-radius: 13px;
+        padding: 3px 16px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+        &:hover { background: #d4e2f9; }
+      }
+    }
+    .form-row { gap: 15px; margin-bottom: 6px;}
+    .form-group { flex: 1; display: flex; flex-direction: column; gap: 2px;}
+  }
+  .security-tips-card {
+    margin-top: 14px;
+    .tips-title { font-weight: 700; font-size: 1.11rem; margin-bottom: 2px;}
+    .tips-desc { font-size: 0.99rem; color: #567; margin-bottom: 10px;}
+    .tip {
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 7px;
+      font-size: 0.96rem; line-height: 1.45;
+      &.tip-green { background: #e7fceb; border-left: 4px solid #6ec296;}
+      &.tip-blue { background: #eaf5ff; border-left: 4px solid #64b6f7;}
+      &.tip-orange { background: #fff4e4; border-left: 4px solid #f7b963;}
+    }
+  }
+  .bottom-actions {
+    margin-top: 26px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+}

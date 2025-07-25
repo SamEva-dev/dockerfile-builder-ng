@@ -1,1 +1,132 @@
-<p>utilisateurs works!</p>
+<div class="user-step">
+  <div class="step-content">
+    <div class="left-side">
+
+      <!-- SÉCURITÉ IMPORTANTE -->
+      <div class="alert-security">
+        <i class="pi pi-exclamation-triangle" style="color: #B03E3D"></i>
+        <div>
+          <div class="title">{{ 'USER.ALERT_TITLE' | translate }}</div>
+          <div class="desc"><span class="red">{{ 'USER.ALERT_MSG' | translate }}</span></div>
+        </div>
+      </div>
+
+      <!-- UTILISATEUR D'EXÉCUTION -->
+      <p-card class="section-card user-card">
+        <ng-template pTemplate="title">
+          <i class="pi pi-user mat-icon-bordered-outline"></i>
+          {{ 'USER.EXEC_TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'USER.EXEC_DESC' | translate }}</div>
+        <div class="switch-row">
+          <p-toggleswitch [(ngModel)]="createUser"></p-toggleswitch>
+          <span>{{ 'USER.EXEC_CREATE' | translate }}</span>
+        </div>
+        <ng-container *ngIf="!createUser">
+           <div class="existing-user" style="display: grid;">
+          <label>{{ 'USER.EXEC_EXISTING' | translate }}</label>
+          <input
+            pInputText
+            [(ngModel)]="selectedExistingUser"
+            [placeholder]="'USER.EXEC_PLACEHOLDER' | translate"
+          />
+          </div>
+          <div class="user-suggestions">
+            <span *ngFor="let user of existingUsers" (click)="selectedExistingUser = user" class="suggest-btn">{{ user }}</span>
+          </div>
+        </ng-container>
+      </p-card>
+
+      <!-- CRÉATION D'UTILISATEUR -->
+      <p-card *ngIf="createUser" class="section-card user-create-card">
+        <ng-template pTemplate="title">
+            <i class="pi pi-user-plus mat-icon-bordered-outline"></i>
+          {{ 'USER.CREATE_TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'USER.CREATE_DESC' | translate }}</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'USER.TYPE' | translate }}</label>
+            <p-select 
+                [options]="userTypes" 
+                [(ngModel)]="userType"
+                (onChange)="userType === 'alpine' ? shell = 'sh' : shell = 'sh'"
+            ></p-select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'USER.USERNAME' | translate }}</label>
+            <input pInputText [(ngModel)]="username" placeholder="appuser"/>
+          </div>
+          <div class="form-group">
+            <label>{{ 'USER.UID' | translate }}</label>
+            <input pInputText type="number" [(ngModel)]="uid" [readonly]="isDebianUser"/>
+          </div>
+          <div class="form-group">
+            <label>{{ 'USER.GID' | translate }}</label>
+            <input pInputText type="number" [(ngModel)]="gid" [readonly]="isDebianUser"/>
+          </div>
+          <div class="form-group">
+            <label>{{ 'USER.SHELL' | translate }}</label>
+            <p-select
+            [options]="shellOptions"
+            [(ngModel)]="shell"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="sf"
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'USER.HOME' | translate }}</label>
+            <input pInputText [(ngModel)]="home" placeholder="/home/appuser" />
+          </div>
+        </div>
+      </p-card>
+
+      <!-- BONNES PRATIQUES SÉCURITÉ -->
+      <p-card class="section-card security-tips-card">
+        <div class="tips-title">{{ 'USER.SECURITY_TITLE' | translate }}</div>
+        <div class="tips-desc">{{ 'USER.SECURITY_DESC' | translate }}</div>
+        <div class="tip tip-green">
+          <b>{{ 'USER.TIP_UID' | translate }}</b><br>
+          {{ 'USER.TIP_UID_DESC' | translate }}
+        </div>
+        <div class="tip tip-blue">
+          <b>{{ 'USER.TIP_SHELL' | translate }}</b><br>
+          {{ 'USER.TIP_SHELL_DESC' | translate }}
+        </div>
+        <div class="tip tip-orange">
+          <b>{{ 'USER.TIP_PERM' | translate }}</b><br>
+          {{ 'USER.TIP_PERM_DESC' | translate }}
+        </div>
+      </p-card>
+
+      <div class="bottom-actions">
+        <p-button 
+            label="{{ 'COMMON.BACK_VOLUMES' | translate }}" 
+            icon="pi pi-arrow-left"
+            class="nav-btn nav-btn-prev"
+            (click)="onPrevious()"
+            severity="secondary"/>
+        <p-button 
+            label="{{ 'COMMON.NEXT_SECURITY' | translate }}" 
+            (click)="onNext()"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            class="nav-btn nav-btn-next btn-blue-right"
+            />
+      </div>
+    </div>
+    <!-- COLONNE DROITE -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)="onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
+  </div>
+</div>
