@@ -10,7 +10,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import { CardModule } from 'primeng/card';
 
 import { CommonModule } from '@angular/common';
-import { Button } from "primeng/button";
+import { Button, ButtonModule } from "primeng/button";
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 
@@ -36,8 +36,9 @@ interface DockerImage {
     FormsModule,
     SelectModule,
     InputTextModule,
-    //Button,
-    ApercuComponent
+    ButtonModule,
+    ApercuComponent,
+    Button
 ],
   templateUrl: './base-image.component.html',
   styleUrl: './base-image.component.scss'
@@ -157,4 +158,19 @@ updateTagOptions() {
     a.click();
     window.URL.revokeObjectURL(url);
   }
+
+  get canGoNext(): boolean {
+  return (
+    (this.selectedPopularIndex !== null) ||
+    (this.customImageName.trim().length > 0)
+  );
+}
+  onPrevious() {
+    // Ta logique "retour" ici
+  }
+  onNext() {
+    // Ta logique "suivant" ici
+  }
+
+
 }
