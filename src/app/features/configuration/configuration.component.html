@@ -1,1 +1,133 @@
-<p>configuration works!</p>
+<div class="configuration-step">
+  <div class="step-content">
+    <!-- COLONNE GAUCHE -->
+    <div class="left-side">
+
+      <!-- Bloc config de base -->
+      <p-card class="section-card">
+        <ng-template pTemplate="title">
+          <span class="mat-icon-colored"><mat-icon>settings</mat-icon></span>
+          {{ 'CONFIG.BASE.TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'CONFIG.BASE.DESC' | translate }}</div>
+        <div class="form-vertical">
+          <label>{{ 'CONFIG.BASE.WORKDIR' | translate }}</label>
+          <input pInputText [(ngModel)]="workdir" />
+          <label>{{ 'CONFIG.BASE.USER' | translate }}</label>
+          <input pInputText [(ngModel)]="user" placeholder="node, www-data, 1001..."/>
+          <label>{{ 'CONFIG.BASE.SHELL' | translate }}</label>
+          <input pInputText [(ngModel)]="shell"  placeholder="[bin/batch,-c]"/>
+          <label>{{ 'CONFIG.BASE.STOPSIGNAL' | translate }}</label>
+          <p-select
+            [options]="stopsignalOptions"
+            [(ngModel)]="stopsignal"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="SIGTERM"
+            />
+        </div>
+      </p-card>
+
+      <!-- Variables ENV -->
+      <p-card class="section-card">
+        <ng-template pTemplate="title">
+          <span class="mat-icon-colored"><mat-icon>tune</mat-icon></span>
+          {{ 'CONFIG.ENV.TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'CONFIG.ENV.DESC' | translate }}</div>
+        <div class="env-list">
+          <div *ngFor="let env of envVars; let i = index" class="env-row">
+            <input pInputText [(ngModel)]="env.key" class="env-key" placeholder="KEY"/>
+            <span>=</span>
+            <input pInputText [(ngModel)]="env.value" class="env-value" placeholder="value"/>
+            <button  pButton icon="pi pi-trash" (click)="removeEnv(i)" class="p-button-rounded p-button-text" aria-label="Supprimer"></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <p-button label="{{ 'CONFIG.ENV.ADD' | translate }}" icon="pi pi-plus" (onClick)="addEnv()" class="btn-blue-right"></p-button>
+        </div>
+      </p-card>
+
+      <!-- Labels -->
+      <p-card class="section-card">
+        <ng-template pTemplate="title">
+          <span class="mat-icon-colored"><mat-icon>label</mat-icon></span>
+          {{ 'CONFIG.LABEL.TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'CONFIG.LABEL.DESC' | translate }}</div>
+        <div class="env-list">
+          <div *ngFor="let label of labels; let i = index" class="env-row">
+            <input pInputText [(ngModel)]="label.key" class="env-key" placeholder="maintainer"/>
+            <span>=</span>
+            <input pInputText [(ngModel)]="label.value" class="env-value" placeholder="email"/>
+            <button  pButton icon="pi pi-trash" (click)="removeLabel(i)" class="p-button-rounded p-button-text btn-blue-right" aria-label="Supprimer"></button>
+          </div>
+        </div>
+        <div class="btn-row">
+          <p-button label="{{ 'CONFIG.LABEL.ADD' | translate }}" icon="pi pi-plus" (onClick)="addLabel()" class="btn-blue-right"></p-button>
+        </div>
+      </p-card>
+
+      <!-- Healthcheck -->
+      <p-card class="section-card">
+        <ng-template pTemplate="title">
+          <span class="mat-icon-colored"><mat-icon>favorite</mat-icon></span>
+          {{ 'CONFIG.HEALTH.TITLE' | translate }}
+        </ng-template>
+        <div class="subtitle">{{ 'CONFIG.HEALTH.DESC' | translate }}</div>
+        <div class="form-vertical">
+          <div class="switch-row">
+            <p-toggleswitch  [(ngModel)]="healthcheckEnabled"></p-toggleswitch >
+            <span>{{ 'CONFIG.HEALTH.ENABLED' | translate }}</span>
+          </div>
+          <div *ngIf="healthcheckEnabled">
+            <div class="command" style="display: grid;">
+            <label>{{ 'CONFIG.HEALTH.CMD' | translate }}</label>
+            <input pInputText [(ngModel)]="healthCmd" />
+            </div>
+            <div class="health-fields">
+              <div>
+                <label>{{ 'CONFIG.HEALTH.INTERVAL' | translate }}</label>
+                <input pInputText [(ngModel)]="healthInterval" />
+              </div>
+              <div>
+                <label>{{ 'CONFIG.HEALTH.TIMEOUT' | translate }}</label>
+                <input pInputText [(ngModel)]="healthTimeout" />
+              </div>
+              <div>
+                <label>{{ 'CONFIG.HEALTH.RETRIES' | translate }}</label>
+                <input pInputText type="number" [(ngModel)]="healthRetries" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <div class="bottom-actions">
+        <p-button 
+                    label="{{ 'COMMON.BACK_INSTRUCTION' | translate }}" 
+                    icon="pi pi-arrow-left"
+                    class="nav-btn nav-btn-prev"
+                    (click)="onPrevious()"
+                    severity="secondary"/>
+                <p-button 
+                    label="{{ 'COMMON.NEXT_PORTS' | translate }}" 
+                    (click)="onNext()"
+                    icon="pi pi-arrow-right"
+                    iconPos="right"
+                    class="nav-btn nav-btn-next btn-blue-right"
+                    
+                    />
+      </div>
+    </div>
+
+    <!-- COLONNE DROITE : PREVIEW -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)="onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
+  </div>
+</div>

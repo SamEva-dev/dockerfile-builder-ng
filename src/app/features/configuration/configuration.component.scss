@@ -1,0 +1,91 @@
+.configuration-step {
+  width: 100%;
+  min-height: 100vh;
+  background: #f7fafd;
+  .step-content {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+    @media (max-width: 1050px) {
+      flex-direction: column;
+    }
+  }
+  .left-side {
+    flex: 1.7;
+    min-width: 340px;
+    max-width: 540px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .right-side {
+    flex: 2.1;
+    min-width: 350px;
+    max-width: 650px;
+  }
+  .section-card {
+    margin-bottom: 0;
+    box-shadow: 0 2px 12px #0077ee10;
+    border-radius: 14px;
+    .p-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .subtitle {
+      color: #496ab1;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+    .form-vertical, .env-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 9px;
+    }
+    .env-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 3px;
+      input[pInputText] {
+        min-width: 70px;
+      }
+      .env-key { width: 140px; }
+      .env-value { width: 210px; }
+    }
+    .btn-row {
+      margin-top: 7px;
+    }
+    .switch-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .health-fields {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+        div {
+            flex: 1 1 30%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        input {
+        width: 100%;
+        min-width: 0;
+        }
+    }
+  }
+  .bottom-actions {
+    margin-top: 26px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+}
