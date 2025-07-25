@@ -1,37 +1,131 @@
-<div class="split-layout">
-  <div class="feature-pane">
-    <!-- Ici, ta logique/metier de la page Instructions -->
-    <h2>Instructions</h2>
-    <!-- ... -->
+<div class="instruction-step">
+  <div class="step-content">
+    <!-- COLONNE GAUCHE -->
+    <div class="left-side">
+
+      <!-- CARD INITIALE : aucune instruction -->
+      <p-card  class="initial-card">
+        <ng-template pTemplate="title" >
+            <div class="title" style="display: grid;">
+                <i class="pi pi-play mat-icon-bordered-outline" style="font-size: 1.4rem">
+                    <span class="instruct-title">{{ 'INSTRUCTION.TITLE' | translate }}</span>
+                </i>
+                <span class="subtitle">{{ 'INSTRUCTION.DESC' | translate }} </span>
+            </div>
+            <p-button
+            label="{{ 'INSTRUCTION.ADD' | translate }}"
+            icon="pi pi-plus"
+            class="btn-blue-right"
+            (onClick)="addInstruction()"
+            styleClass="p-button-primary"
+            ></p-button>
+        </ng-template>
+        
+
+        <div class="empty-list" *ngIf="instructions.length === 0">
+        
+          <div>
+            <i class="pi pi-code" style="font-size: 30px;"></i>
+          </div>
+          <p style="margin-bottom:16px;">
+            {{ 'INSTRUCTION.EMPTY' | translate }}
+          </p>
+          <p-button
+            label="{{ 'INSTRUCTION.ADD_FIRST' | translate }}"
+            icon="pi pi-plus"
+            (onClick)="addInstruction()"
+            class="btn-blue-right"
+          ></p-button>
+        </div>
+
+        <ng-container *ngIf="instructions.length > 0">
+        
+        <div class="instructions-list">
+          <p-card
+            *ngFor="let step of instructions; let i = index"
+            class="instruction-card"
+          >
+            <ng-template pTemplate="title">
+              <span class="step-tag">{{ 'INSTRUCTION.STEP' | translate }} {{ i+1 }}</span>
+              <button pButton pRipple type="button" icon="pi pi-trash"
+                class="p-button-text p-button-rounded delete-btn"
+                (click)="removeInstruction(i)"
+                aria-label="Supprimer"
+              ></button>
+            </ng-template>
+            <div class="form-vertical">
+              <!-- Type d'instruction -->
+              <label for="type-{{i}}">{{ 'INSTRUCTION.TYPE' | translate }}</label>
+              <p-select
+                id="type-{{i}}"
+                [options]="instructionTypes"
+                [(ngModel)]="instructions[i].type"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Sélectionner une instruction"
+                [filter]="true"
+                class="w-full md:w-56"
+              >
+                <ng-template let-option pTemplate="item">
+                  <div>
+                    <span>{{ option.label }}</span>
+                    <span class="item-desc">{{ option.desc | translate }}</span>
+                  </div>
+                </ng-template>
+              </p-select>
+
+              <!-- Contenu -->
+              <label for="content-{{i}}">{{ 'INSTRUCTION.CONTENT' | translate }}</label>
+              <input
+                pInputText
+                id="content-{{i}}"
+                [(ngModel)]="instructions[i].content"
+                autocomplete="off"
+                placeholder="/app, NODE_ENV=dev, etc."
+              />
+
+              <!-- Description optionnelle -->
+              <label for="desc-{{i}}">{{ 'INSTRUCTION.DESCRIPTION' | translate }}</label>
+              <input
+                pInputText
+                id="desc-{{i}}"
+                [(ngModel)]="instructions[i].description"
+                autocomplete="off"
+                placeholder="{{ 'INSTRUCTION.DESCRIPTION_PLACEHOLDER' | translate }}"
+              />
+            </div>
+          </p-card>
+        </div>
+        
+      </ng-container>
+      </p-card>
+
+      <!-- LISTE DES INSTRUCTIONS AJOUTÉES -->
+      <div class="step-navigation">
+              
+        <p-button 
+            label="{{ 'COMMON.BACK_BASE' | translate }}" 
+            icon="pi pi-arrow-left"
+            class="nav-btn nav-btn-prev"
+            (click)="onPrevious()"
+            severity="secondary"/>
+        <p-button 
+            label="{{ 'COMMON.NEXT_CONFIG' | translate }}" 
+            (click)="onNext()"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            class="nav-btn nav-btn-next btn-blue-right"
+            />
+        </div>
+    </div>
+
+    <!-- COLONNE DROITE : APERCU DOCKERFILE -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)="onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
   </div>
-  
 </div>
-<div class="instruction-bg">
-  <div class="hero-section">
-    <h1 [innerHTML]="'INSTRUCTION.HERO_TITLE' | translate"></h1>
-    <p class="subtitle" [innerHTML]="'INSTRUCTION.HERO_SUBTITLE' | translate"></p>
-    <div class="cta-buttons">
-      <button mat-raised-button color="primary">{{ 'INSTRUCTION.CTA_START' | translate }}</button>
-      <button mat-stroked-button color="primary">{{ 'INSTRUCTION.CTA_HELP' | translate }}</button>
-    </div>
-  </div>
-
-  <section class="instructions">
-    <h2>{{ 'INSTRUCTION.STEPS_TITLE' | translate }}</h2>
-    <ol class="steps-list">
-      <li>{{ 'INSTRUCTION.STEP_1' | translate }}</li>
-      <li>{{ 'INSTRUCTION.STEP_2' | translate }}</li>
-      <li>{{ 'INSTRUCTION.STEP_3' | translate }}</li>
-      <li>{{ 'INSTRUCTION.STEP_4' | translate }}</li>
-    </ol>
-  </section>
-
-  <section class="cta-final">
-    <div class="cta-box">
-      <h3 [innerHTML]="'INSTRUCTION.CTA_READY_TITLE' | translate"></h3>
-      <p>{{ 'INSTRUCTION.CTA_READY_DESC' | translate }}</p>
-      <button mat-raised-button color="primary">
-        {{ 'INSTRUCTION.CTA_START' | translate }} &nbsp; <mat-icon>arrow_forward</mat-icon>
-      </button>
-    </div>
-  </section>

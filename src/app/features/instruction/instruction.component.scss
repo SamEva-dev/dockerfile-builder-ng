@@ -1,30 +1,142 @@
-.split-layout {
-  display: flex;
-  flex-direction: row;
-  gap: 32px;
+.instruction-step {
   width: 100%;
-  min-height: 100%;
-  align-items: flex-start;
+  padding: 2rem 0 0 0;
+  min-height: 100vh;
+  background: #f7fafd;
 
-  .feature-pane {
-    flex: 2 1 0;
-    min-width: 0;
-    background: none;
-    // Ajoute padding ici si besoin
+  .step-content {
+    display: flex;
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+    justify-content: center;
+    @media (max-width: 1050px) {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
   }
 
-  app-apercu {
-    flex: 1 1 0;
-    min-width: 260px;
-    max-width: 420px;
+  .left-side {
+    flex: 1.7;
+    min-width: 320px;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
-}
+  .right-side {
+    flex: 2.2;
+    min-width: 340px;
+    max-width: 650px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 
-@media (max-width: 900px) {
-  .split-layout {
+  .instructions-header {
+    margin-bottom: 0;
+    .p-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .subtitle {
+      color: #3d62a5;
+      font-size: 1rem;
+      margin-left: 6px;
+      margin-bottom: 0.6rem;
+    }
+  }
+  .initial-card {
+    .p-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    
+  }
+  .empty-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 0 12px 0;
+      .mat-icon {
+        margin-bottom: 12px;
+      }
+      p {
+        font-size: 1.08rem;
+        color: #55678d;
+        text-align: center;
+      }
+    }
+  .instructions-list {
+    display: flex;
     flex-direction: column;
     gap: 16px;
-    .feature-pane, app-apercu { max-width: 100%; }
-    app-apercu { margin-left: 0; }
+    margin-bottom: 6px;
   }
+  .instruction-card {
+    margin-bottom: 0;
+    .step-tag {
+      font-size: 1.01rem;
+      font-weight: 600;
+      color: #1976d2;
+      padding: 3px 12px;
+      border-radius: 20px;
+      margin-right: 8px;
+      letter-spacing: 0.1em;
+    }
+    .delete-btn {
+      float: right;
+      color: #de4343 !important;
+      margin-left: auto;
+    }
+    .form-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #123a66;
+        margin-bottom: 1px;
+        margin-top: 5px;
+      }
+      input[pInputText], p-select {
+        width: 100%;
+        min-height: 38px;
+      }
+      .item-desc {
+        display: block;
+        font-size: 0.92em;
+        color: #6f7ba3;
+      }
+    }
+  }
+
+  .bottom-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+  }
+  .subtitle {
+      color: gray;
+      font-size: 1rem;
+      margin-left: 6px;
+      margin-bottom: 0.6rem;
+    }
+    .instruct-title{
+        color: black;
+    }
+  
+}
+
+:host ::ng-deep .p-card-title.ng-star-inserted {
+    display: flex !important;
+    justify-content: space-between !important;
 }
