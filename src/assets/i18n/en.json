@@ -97,11 +97,102 @@
     "TYPE_EXPOSE_PORT": "Exposed port",
     "TYPE_EXPOSE_PORT_DESC": "Port to expose for the container"
   },
+  "CONFIG": {
+    "BASE": {
+      "TITLE": "Basic Configuration",
+      "DESC": "Fundamental container settings",
+      "WORKDIR": "Working directory (WORKDIR)",
+      "USER": "Execution user (USER)",
+      "SHELL": "Default shell (SHELL)",
+      "STOPSIGNAL": "Stop signal"
+    },
+    "ENV": {
+      "TITLE": "Environment Variables",
+      "DESC": "Set ENV variables for your container",
+      "ADD": "Add"
+    },
+    "LABEL": {
+      "TITLE": "Labels and Metadata",
+      "DESC": "Add metadata to your image",
+      "ADD": "Add"
+    },
+    "HEALTH": {
+      "TITLE": "Health Check (HEALTHCHECK)",
+      "DESC": "Configure health monitoring for your container",
+      "ENABLED": "Enable health check",
+      "CMD": "Check command",
+      "INTERVAL": "Interval",
+      "TIMEOUT": "Timeout",
+      "RETRIES": "Retries"
+    }
+  },
+  "PORTS": {
+  "TITLE": "Port Exposure",
+  "DESC": "Define the ports exposed by your container",
+  "ADD": "Add",
+  "ADD_FIRST": "Add your first port",
+  "EMPTY": "No port configured",
+  "PORT": "Port",
+  "NUM": "Port number",
+  "PROTOCOL": "Protocol",
+  "DESC2": "Description (optional)",
+  "COMMONS": "Common ports",
+  "COMMONS_SUB": "Click to quickly add standard ports"
+  },
+  "VOLUMES": {
+	"PMT": "Mount points",
+	"PMT_DESC": "Define the directories to persist in volumes",
+	"PMT_EMPTY": "No mount point configured",
+	"PATH": "Path in container",
+	"TYPE_VOLUME": "Volume type",
+	"DESC": "Description (optional)",
+	"COMMON_VOLUM": "Common volumes",
+	"ADD_PMT": "Click to quickly add standard mount points",
+	"NANE_VOLUM": "Named volume",
+	"VOLUM_DESC": "Managed by Docker, persists even after the container is removed. Recommended for production.",
+	"BIND_MOUNT": "Bind mount",
+	"BIND_MOUNT_DESC": "Directly links a host folder to the container. Useful for development and file sharing.",
+	"TMPFS_DESC": "Temporary in-memory storage. Fast but not persistent. Ideal for caches."
+
+},
+"USER": {
+    "ALERT_TITLE": "Important Security Notice",
+    "ALERT_MSG": "Never run as root in production! Always use a non-privileged user to minimize security risks.",
+    "EXEC_TITLE": "Execution User",
+    "EXEC_DESC": "Choose the user that will run the application inside the container",
+    "EXEC_CREATE": "Create a new user",
+    "EXEC_EXISTING": "Existing user",
+    "EXEC_PLACEHOLDER": "Enter or select a user",
+    "CREATE_TITLE": "User Creation",
+    "CREATE_DESC": "Configure the new user's details",
+    "TYPE": "User type",
+    "USERNAME": "Username",
+    "UID": "UID (User ID)",
+    "GID": "GID (Group ID)",
+    "SHELL": "Shell",
+    "HOME": "Home directory (optional)",
+    "SECURITY_TITLE": "Security Best Practices",
+    "SECURITY_DESC": "Recommendations for a secure configuration",
+    "TIP_UID": "Non-privileged UID/GID",
+    "TIP_UID_DESC": "Use UID/GID > 1000 to avoid conflicts with system users.",
+    "TIP_SHELL": "Secure shell",
+    "TIP_SHELL_DESC": "Use /usr/sbin/nologin if the user does not require interactive shell access.",
+    "TIP_PERM": "Minimal permissions",
+    "TIP_PERM_DESC": "The user should only have the permissions strictly necessary for the application."
+  },
   "COMMON": {
     "BACK_HOME": "Back",
     "NEXT_INSTRUCT": "Next: Instructions",
    "BACK_BASE": "Back: Base image",
-    "NEXT_CONFIG": "Next: Configuration"
+    "NEXT_CONFIG": "Next: Configuration",
+    "BACK_INSTRUCTION": "Back: Instructions",
+    "NEXT_PORTS": "Next: Ports & Network",
+    "BACK_CONFIG": "Back: Configuration",
+    "NEXT_VOLUMES": "Next: Volumes",
+    	"BACK_PORT": "Back: Ports & Network",
+  "NEXT_USER": "Next: Users",
+  "BACK_VOLUMES": "Back: Volumes",
+    "NEXT_SECURITY": "Next: Security"
 
   }
 

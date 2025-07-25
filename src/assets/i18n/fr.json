@@ -98,11 +98,126 @@
     "TYPE_EXPOSE_PORT": "Port exposé",
     "TYPE_EXPOSE_PORT_DESC": "Port à exposer pour le conteneur"
   },
+  "CONFIG": {
+    "BASE": {
+      "TITLE": "Configuration de base",
+      "DESC": "Paramètres fondamentaux du conteneur",
+      "WORKDIR": "Répertoire de travail (WORKDIR)",
+      "USER": "Utilisateur d’exécution (USER)",
+      "SHELL": "Shell par défaut (SHELL)",
+      "STOPSIGNAL": "Signal d'arrêt"
+    },
+    "ENV": {
+      "TITLE": "Variables d'environnement",
+      "DESC": "Définissez les variables ENV pour votre conteneur",
+      "ADD": "Ajouter"
+    },
+    "LABEL": {
+      "TITLE": "Labels et métadonnées",
+      "DESC": "Ajoutez des métadonnées à votre image",
+      "ADD": "Ajouter"
+    },
+    "HEALTH": {
+      "TITLE": "Vérification de santé (HEALTHCHECK)",
+      "DESC": "Configurez la surveillance de l'état de votre conteneur",
+      "ENABLED": "Activer la vérification de santé",
+      "CMD": "Commande de vérification",
+      "INTERVAL": "Intervalle",
+      "TIMEOUT": "Timeout",
+      "RETRIES": "Tentatives"
+    }
+  },
+  "PORTS": {
+    "TITLE": "Exposition des ports",
+    "DESC": "Définissez les ports que votre conteneur expose",
+    "ADD": "Ajouter",
+    "ADD_FIRST": "Ajouter votre premier port",
+    "EMPTY": "Aucun port configuré",
+    "PORT": "Port",
+    "NUM": "Numéro de port",
+    "PROTOCOL": "Protocole",
+    "DESC2": "Description (optionnel)",
+    "COMMONS": "Ports communs",
+    "COMMONS_SUB": "Cliquez pour ajouter rapidement des ports standards"
+  },
+  "VOLUMES":{
+	"PMT":"Points de montage",
+	"PMT_DESC":"Définissez les répertoires à persister dans des volumes",
+	"PMT_EMPTY":"Aucun point configuré",
+	"PATH":"Chemin dans le conteneur",
+	"TYPE_VOLUME":"Type de volume",
+	"DESC":"Description (optionnel)",
+	"COMMON_VOLUM":"Volumes communs",
+	"ADD_PMT":"Cliquez pour ajouter rapidement des points de montage standards",
+	"NANE_VOLUM":"Volume nommé",
+	"VOLUM_DESC":"Géré par Docker, persistant même après suppression du conteneur. Recommandé pour la production.",
+	"BIND_MOUNT":"Bind mount",
+	"BIND_MOUNT_DESC":"Lie directement un dossier de l’hôte au conteneur. Utile pour le développement et le partage de fichiers.",
+	"TMPFS_DESC":"Stockage temporaire en mémoire. Rapide mais non persistant. Idéal pour les caches."
+},
+"USER": {
+    "ALERT_TITLE": "Sécurité importante",
+    "ALERT_MSG": "Ne jamais exécuter en tant que root en production ! Utilisez toujours un utilisateur non-privilégié pour limiter les risques de sécurité.",
+    "EXEC_TITLE": "Utilisateur d'exécution",
+    "EXEC_DESC": "Choisissez l'utilisateur qui exécutera l'application dans le conteneur",
+    "EXEC_CREATE": "Créer un nouvel utilisateur",
+    "EXEC_EXISTING": "Utilisateur existant",
+    "EXEC_PLACEHOLDER": "Entrer ou sélectionner un utilisateur",
+    "CREATE_TITLE": "Création d'utilisateur",
+    "CREATE_DESC": "Configurez les détails du nouvel utilisateur",
+    "TYPE": "Type d'utilisateur",
+    "USERNAME": "Nom d'utilisateur",
+    "UID": "UID (User ID)",
+    "GID": "GID (Group ID)",
+    "SHELL": "Shell",
+    "HOME": "Répertoire home (optionnel)",
+    "SECURITY_TITLE": "Bonnes pratiques de sécurité",
+    "SECURITY_DESC": "Recommandations pour une configuration sécurisée",
+    "TIP_UID": "UID/GID non-privilégiés",
+    "TIP_UID_DESC": "Utilisez des UID/GID > 1000 pour éviter les conflits avec les utilisateurs système.",
+    "TIP_SHELL": "Shell sécurisé",
+    "TIP_SHELL_DESC": "Utilisez /usr/sbin/nologin si l'utilisateur n'a pas besoin d'accès shell interactif.",
+    "TIP_PERM": "Permissions minimales",
+    "TIP_PERM_DESC": "L'utilisateur ne doit avoir que les permissions strictement nécessaires à l'application."
+  },
+  "SECURITY": {
+    "NOTE_TITLE": "Note importante",
+    "NOTE_MSG": "Les options de sécurité ci-dessous sont appliquées avec docker run, pas dans le Dockerfile. Elles seront documentées dans la prévisualisation.",
+    "BASE_TITLE": "Options de base",
+    "BASE_DESC": "Configurations de sécurité fondamentales",
+    "READONLY": "Système de fichiers racine en lecture seule",
+    "NONEWPRIV": "Interdire l'élévation de privilèges",
+    "CAP_TITLE": "Capabilities Linux",
+    "CAP_DESC": "Contrôlez finement les permissions du conteneur",
+    "CAP_SELECT": "Sélectionner une capability",
+    "CAP_ADD": "Ajouter",
+    "PROFILE_TITLE": "Profils de sécurité",
+    "PROFILE_DESC": "Configurez les profils de sécurité avancés",
+    "RECO_TITLE": "Recommandations de sécurité",
+    "RECO_DESC": "Bonnes pratiques pour une sécurité optimale",
+    "RECO_PRIV": "Principe de moindre privilège",
+    "RECO_PRIV_DESC": "Retirez toutes les capabilities non nécessaires et utilisez un utilisateur non-root.",
+    "RECO_FS": "Système de fichiers en lecture seule",
+    "RECO_FS_DESC": "Activez --read-only et utilisez des volumes temporaires pour les répertoires d'écriture.",
+    "RECO_AUDIT": "Surveillance et audit",
+    "RECO_AUDIT_DESC": "Utilisez des outils comme Falco pour surveiller les activités suspectes en temps réel."
+  },
+
   "COMMON": {
     "BACK_HOME": "Retour",
     "NEXT_INSTRUCT": "Suivant: Instructions",
     "BACK_BASE": "Retour : Image de base",
-    "NEXT_CONFIG": "Suivant: Configuration"
+    "NEXT_CONFIG": "Suivant: Configuration",
+    "BACK_INSTRUCTION": "Retour: Instructions",
+    "NEXT_PORTS": "Suivant: Ports & Réseau",
+    "BACK_CONFIG": "Retour: Configuration",
+    "NEXT_VOLUMES": "Suivant: Volumes",
+    "BACK_PORT": "Retour: Ports & Réseau",
+    "NEXT_USER": "Suivant: Utilisateurs",
+    "BACK_VOLUMES": "Retour: Volumes",
+    "NEXT_SECURITY": "Suivant: Sécurité",
+     "BACK_USER": "Retour: Utilisateurs",
+    "NEXT_REVIEW": "Suivant: Aperçu"
   }
 
 }
