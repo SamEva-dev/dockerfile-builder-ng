@@ -1,1 +1,139 @@
-<p>volumes works!</p>
+<div class="volume-step">
+  <div class="step-content">
+    <!-- COLONNE GAUCHE -->
+    <div class="left-side">
+
+      <!-- Points de montage -->
+      <p-card class="section-card volumes-card">
+        <div class="card-header">
+          <div>
+            <i class="pi pi-database mat-icon-colored">
+                <span class="title">{{'VOLUMES.PMT' | translate }}</span>
+            </i>
+            
+            <div class="subtitle">{{'VOLUMES.PMT_DESC' | translate }}</div>
+          </div>
+          <p-button
+            label="Ajouter"
+            icon="pi pi-plus"
+            class="add-btn btn-blue-right"
+            (onClick)="addVolume()"
+            styleClass="p-button-primary"
+          ></p-button>
+        </div>
+        <ng-container *ngIf="volumes.length === 0">
+          <div class="init-content">
+            <i class="pi pi-inbox mat-icon-colored"></i>
+            <div class="empty-msg">{{'VOLUMES.PMT_EMPTY' | translate }}</div>
+            <p-button
+              label="Ajouter votre premier volume"
+              icon="pi pi-plus"
+              class="first-btn btn-blue-right"
+              (onClick)="addVolume()"
+              styleClass="p-button-primary"
+            ></p-button>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="volumes.length > 0">
+          <div class="volumes-list">
+            <p-card *ngFor="let v of volumes; let i = index" class="volume-entry-card">
+              <div class="volume-header">
+                <span class="volume-tag">Volume {{ i+1 }}</span>
+                <button  pButton icon="pi pi-trash" (click)="removeVolume(i)" class="p-button-rounded p-button-text" aria-label="Supprimer"></button>
+              </div>
+              <div class="health-fields">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>{{'VOLUMES.PATH' | translate }}</label>
+                  <input
+                    pInputText
+                    [(ngModel)]="v.path"
+                    [readonly]="v.isCommon"
+                    placeholder="/app/data"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>{{'VOLUMES.TYPE_VOLUME' | translate }}</label>
+                  <p-select
+                    [options]="volumeTypes"
+                    [(ngModel)]="v.type"
+                  ></p-select>
+                </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>{{'VOLUMES.DESC' | translate }}</label>
+                <input
+                  pInputText
+                  [(ngModel)]="v.description"
+                  placeholder="Description"
+                  [readonly]="v.isCommon"
+                />
+              </div>
+            </p-card>
+          </div>
+        </ng-container>
+      </p-card>
+
+      <!-- Volumes communs -->
+      <p-card class="section-card volumes-communs-card">
+        <div class="volumes-communs-header">{{'VOLUMES.COMMON_VOLUM' | translate }}</div>
+        <div class="volumes-communs-subtitle">{{'VOLUMES.ADD_PMT' | translate }}</div>
+        <div class="volumes-communs-list">
+          <button
+            *ngFor="let common of commonVolumes"
+            type="button"
+            class="common-volume-btn"
+            [class.active]="isCommonActive(common)"
+            (click)="addVolume(common)"
+            [disabled]="isCommonActive(common)"
+          >
+            <span class="label">{{ common.label }}</span>
+            <span class="sub">{{ common.sub }}</span>
+          </button>
+        </div>
+      </p-card>
+
+      <!-- Types de volumes -->
+      <p-card class="section-card infos-volumes-card">
+        <div class="info info-blue">
+          <b>{{'VOLUMES.NANE_VOLUM' | translate }}</b><br>
+          {{'VOLUMES.VOLUM_DESC' | translate }}
+        </div>
+        <div class="info info-green">
+          <b>{{'VOLUMES.BIND_MOUNT' | translate }}</b><br>
+          {{'VOLUMES.BIND_MOUNT_DESC' | translate }}
+        </div>
+        <div class="info info-orange">
+          <b>Tmpfs</b><br>
+          {{'VOLUMES.TMPFS_DESC' | translate }}
+        </div>
+      </p-card>
+
+      <div class="bottom-actions">
+        <p-button 
+            label="{{ 'COMMON.BACK_PORT' | translate }}" 
+            icon="pi pi-arrow-left"
+            class="nav-btn nav-btn-prev"
+            (click)="onPrevious()"
+            severity="secondary"/>
+        <p-button 
+            label="{{ 'COMMON.NEXT_USER' | translate }}" 
+            (click)="onNext()"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            class="nav-btn nav-btn-next btn-blue-right"
+            />
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="right-side">
+      <app-apercu
+        [content]="dockerfilePreview"
+        (copy)=" onCopyDockerfile()"
+        (download)="onDownloadDockerfile()"
+      ></app-apercu>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,161 @@
+.volume-step {
+  width: 100%;
+  min-height: 100vh;
+  background: #f7fafd;
+  .step-content {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+    @media (max-width: 1050px) { flex-direction: column; }
+  }
+  .left-side {
+    flex: 1.7;
+    min-width: 340px;
+    max-width: 540px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .right-side {
+    flex: 2.1;
+    min-width: 350px;
+    max-width: 650px;
+  }
+  .section-card {
+    box-shadow: 0 2px 12px #0077ee10;
+    border-radius: 14px;
+    margin-bottom: 0;
+  }
+  .volumes-card {
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 8px 0 16px 0;
+      .title {
+        font-size: 1.23rem;
+        font-weight: 700;
+        margin-left: 8px;
+        color: #193f79;
+      }
+      .subtitle {
+        font-size: 1.01rem;
+        color: #41689c;
+        margin-top: -2px;
+      }
+      .add-btn { min-width: 110px; margin-left: 20px; }
+    }
+    .init-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 0 20px 0;
+      .init-icon {
+        font-size: 2.8rem;
+        color: #a3c0ea;
+        margin-bottom: 10px;
+      }
+      .empty-msg {
+        font-size: 1.13rem;
+        color: #678;
+        margin-bottom: 18px;
+        margin-top: 2px;
+      }
+      .first-btn { min-width: 270px; }
+    }
+    .volumes-list { display: flex; flex-direction: column; gap: 16px; }
+    .volume-entry-card {
+      background: #f7fafd;
+      border-radius: 10px;
+      margin-bottom: 0;
+      padding: 16px 14px 10px 16px;
+      .volume-header {
+        display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+        .volume-tag {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1976d2;
+          background: #e8f1fc;
+          padding: 3px 12px;
+          border-radius: 20px;
+        }
+        .delete-btn { color: #de4343 !important; }
+        
+      }
+      .form-row {
+        display: flex;
+        gap: 16px;
+        .form-group { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+      }
+      .form-group { 
+        margin-bottom: 8px; 
+        display: grid;
+        label {
+            font-size: 1rem;
+            font-weight:500;
+            color:#123a66;margin-bottom:1px;
+        }
+    }
+      .health-fields {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+        div {
+            flex: 1 1 30%;
+            min-width: 0;
+            max-width: 100%;
+        }
+        input {
+        width: 100%;
+        min-width: 0;
+        }
+    }
+    }
+  }
+  .volumes-communs-card {
+    .volumes-communs-header { font-weight: 700; font-size: 1.11rem; margin-bottom: 2px; }
+    .volumes-communs-subtitle { font-size: 0.99rem; color: #567; margin-bottom: 9px; }
+    .volumes-communs-list {
+      display: flex; flex-wrap: wrap; gap: 11px; margin-top: 2px;
+      .common-volume-btn {
+        border: 1px solid #c7dbf7;
+        background: #e9f1fc;
+        border-radius: 13px;
+        padding: 8px 14px;
+        min-width: 110px;
+        text-align: left;
+        transition: background 0.2s, color 0.2s;
+        cursor: pointer;
+        display: flex; flex-direction: column;
+        .label { font-weight: 700; color: #226edb; font-size: 1.03rem;}
+        .sub { font-size: 0.92em; color: #5a7bb6; }
+        &.active, &[disabled] {
+          background: #c1d4f2;
+          border-color: #92b4e7;
+          color: #7f8c99;
+          cursor: not-allowed;
+          .label { color: #7f8c99; }
+          .sub { color: #b5b9be; }
+        }
+      }
+    }
+  }
+  .infos-volumes-card { 
+     .info {
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 10px;
+      font-size: 0.97rem; line-height: 1.5;
+      &.info-blue { background: #eaf5ff; border-left: 4px solid #64b6f7; }
+      &.info-green { background: #e7fceb; border-left: 4px solid #6ec296;}
+      &.info-orange { background: #fff4e4; border-left: 4px solid #f7b963;}
+    }
+   }
+  .bottom-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+}
