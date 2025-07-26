@@ -13,6 +13,11 @@ import { SelectModule } from 'primeng/select';
 import { ApercuComponent } from '../apercu/apercu.component';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CommonModule } from '@angular/common';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 
 interface Capability {
   type: 'ADD' | 'DROP';
@@ -23,7 +28,6 @@ interface Capability {
   selector: 'app-securite',
   imports: [
     CommonModule,
-    ApercuComponent,
     MatIconModule,
     TranslatePipe,
     MatFormFieldModule,
@@ -36,13 +40,18 @@ interface Capability {
     InputTextModule,
     ButtonModule,
     ToggleSwitchModule,
-  ],
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent
+],
   templateUrl: './securite.component.html',
   styleUrl: './securite.component.scss'
 })
 export class SecuriteComponent implements OnInit {
   
-  constructor(translate: TranslateService) {}
+  constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
 
   @Input() baseDockerfile = '';
 
@@ -117,6 +126,109 @@ export class SecuriteComponent implements OnInit {
     return out.trim();
   }
 
+  get dockerComposePreview(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0]; // FROM ...
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let out = `version: '3.8'
+services:
+  app:
+    image: ${image}
+    # Configuration sécurité générée par Docker Builder
+    # IMPORTANT: Ces options ne sont pas dans le Dockerfile, mais au runtime`;
+
+  if (this.readOnlyRoot) {
+    out += `\n    read_only: true`;
+  }
+
+  let securityOpts: string[] = [];
+
+  if (this.noNewPrivs) {
+    securityOpts.push(`no-new-privileges:true`);
+  }
+
+  if (this.seccomp) {
+    securityOpts.push(`seccomp=${this.seccomp}`);
+  }
+
+  if (this.apparmor) {
+    securityOpts.push(`apparmor=${this.apparmor}`);
+  }
+
+  if (this.selinux) {
+    securityOpts.push(`label=option:${this.selinux}`);
+  }
+
+  if (securityOpts.length > 0) {
+    out += `\n    security_opt:`;
+    securityOpts.forEach(opt => {
+      out += `\n      - ${opt}`;
+    });
+  }
+
+  const capAdd = this.capabilities.filter(c => c.type === 'ADD' && c.name).map(c => c.name);
+  const capDrop = this.capabilities.filter(c => c.type === 'DROP' && c.name).map(c => c.name);
+
+  if (capAdd.length > 0) {
+    out += `\n    cap_add:`;
+    capAdd.forEach(cap => out += `\n      - ${cap}`);
+  }
+
+  if (capDrop.length > 0) {
+    out += `\n    cap_drop:`;
+    capDrop.forEach(cap => out += `\n      - ${cap}`);
+  }
+
+  return out.trim();
+}
+
+get dockerRunCommand(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0]; // FROM ...
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let cmd = `docker run \\`;
+
+  cmd += `\n  # --user ... \\`;
+
+  if (this.readOnlyRoot) {
+    cmd += `\n  --read-only \\`;
+  }
+
+  if (this.noNewPrivs) {
+    cmd += `\n  --security-opt no-new-privileges:true \\`;
+  }
+
+  this.capabilities.forEach(c => {
+    if (c.type === 'ADD' && c.name) {
+      cmd += `\n  --cap-add ${c.name} \\`;
+    }
+    if (c.type === 'DROP' && c.name) {
+      cmd += `\n  --cap-drop ${c.name} \\`;
+    }
+  });
+
+  if (this.seccomp) {
+    cmd += `\n  --security-opt seccomp=${this.seccomp} \\`;
+  }
+
+  if (this.apparmor) {
+    cmd += `\n  --security-opt apparmor=${this.apparmor} \\`;
+  }
+
+  if (this.selinux) {
+    cmd += `\n  --security-opt label=option:${this.selinux} \\`;
+  }
+
+  cmd += `\n  ${image}`;
+  cmd += `\n\n# Ces options de sécurité doivent être appliquées lors à l'exécution du conteneur pour garantir un environnement sécurisé.`;
+
+  return cmd.trim();
+}
+
+
+
   onCopyDockerfile() {
     if (this.dockerfilePreview)
       navigator.clipboard.writeText(this.dockerfilePreview);
@@ -138,7 +250,11 @@ export class SecuriteComponent implements OnInit {
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+    this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/apercu']);
   }
 
 }

@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { LanguageSwitchComponent } from "../../shared/components/language-switch/language-switch.component";
-import { NavigationService } from '../../../core/services/navigation.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatIconModule } from "@angular/material/icon";
+import { NavigationService } from '../../core/services/navigation.service';
 
 @Component({
   selector: 'app-top-bar',

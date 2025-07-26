@@ -46,7 +46,9 @@
     "TAG": "Tag de l'image",
     "TAG_CUSTOM": "Personnalisé...",
     "TAG_PLACEHOLDER": "Tag personnalisé",
-    "DOCKERFILE_PREVIEW": "Aperçu Dockerfile"
+    "DOCKERFILE_PREVIEW": "Aperçu Docker file",
+    "DOCKERCOMPOSE_PREVIEW": "Docker compose Preview",
+    "DOCKERCOMMAND_PREVIEW": "Docker commande Preview"
     
   },
   "INSTRUCTION": {

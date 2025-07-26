@@ -13,6 +13,12 @@ import { CommonModule } from '@angular/common';
 import { Button, ButtonModule } from "primeng/button";
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
+import { DividerModule } from 'primeng/divider';
 
 
 interface DockerImage {
@@ -37,14 +43,19 @@ interface DockerImage {
     SelectModule,
     InputTextModule,
     ButtonModule,
-    ApercuComponent,
-    Button
+    Button,
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent,
+    DividerModule
 ],
   templateUrl: './base-image.component.html',
   styleUrl: './base-image.component.scss'
 })
 export class BaseImageComponent {
-constructor(translate: TranslateService) {}
+constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
 
 popularImages: DockerImage[] = [
     { name: 'node', desc: 'Runtime JavaScript pour applications Node.js', tags: ['18', '20', 'alpine'] },
@@ -118,7 +129,6 @@ updateTagOptions() {
   onCustomTagChange(value: string) {
     this.customTag = value;
 
-    console.log('Custom tag:', this.customTag);
   }
 
   // Génération du contenu Dockerfile
@@ -136,12 +146,70 @@ updateTagOptions() {
       tag = this.selectedTag;
     }
     if (!image) return '';
+
+    
     return `FROM ${image}:${tag}
 
-# Dockerfile généré par Docker Builder
-# Image de base sélectionnée: ${image}:${tag}
-`;
+    # Dockerfile généré par Docker Builder
+    # Image de base sélectionnée: ${image}:${tag}
+    `;
   }
+
+  get dockerComposePreview(): string {
+  let image = '';
+  let tag = '';
+
+  if (this.selectedPopularIndex !== null) {
+    image = this.popularImages[this.selectedPopularIndex].name;
+  } else if (this.customImageName.trim() !== '') {
+    image = this.customImageName.trim();
+  }
+
+  if (this.selectedTag === 'personnalisé') {
+    tag = this.customTag || 'latest';
+  } else {
+    tag = this.selectedTag;
+  }
+
+  if (!image) return '';
+
+  const fullImage = `${image}:${tag}`;
+  const containerName = `${image}-container`;
+
+  console.log('Generated docker-compose:', fullImage, containerName);
+
+  return `version: '3.8'
+services:
+  app:
+    image: ${fullImage}
+    container_name: ${containerName}
+`;
+}
+
+  get dockerRunCommand(): string {
+    let image = '';
+    let tag = '';
+
+    if (this.selectedPopularIndex !== null) {
+      image = this.popularImages[this.selectedPopularIndex].name;
+    } else if (this.customImageName.trim() !== '') {
+      image = this.customImageName.trim();
+    }
+
+    if (this.selectedTag === 'personnalisé') {
+      tag = this.customTag || 'latest';
+    } else {
+      tag = this.selectedTag;
+    }
+
+    if (!image) return '';
+
+    const fullImage = `${image}:${tag}`;
+    const containerName = `${image}-container`;
+
+    return `docker run --name ${containerName} ${fullImage}`;
+  }
+
 
   // Actions copy/download (facultatif)
   onCopyDockerfile() {
@@ -169,8 +237,10 @@ updateTagOptions() {
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+    this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/instruction']);
   }
-
-
 }

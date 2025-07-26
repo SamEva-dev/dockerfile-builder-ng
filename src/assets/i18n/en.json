@@ -46,7 +46,9 @@
     "TAG": "Image tag",
     "TAG_CUSTOM": "Custom...",
     "TAG_PLACEHOLDER": "Custom tag",
-    "DOCKERFILE_PREVIEW": "Dockerfile Preview"
+    "DOCKERFILE_PREVIEW": "Docker file Preview",
+    "DOCKERCOMPOSE_PREVIEW": "Docker compose Preview",
+    "DOCKERCOMMAND_PREVIEW": "Docker command Preview"
   },
   "INSTRUCTION": {
     "TITLE": "Dockerfile Instructions",
@@ -180,6 +182,28 @@
     "TIP_PERM": "Minimal permissions",
     "TIP_PERM_DESC": "The user should only have the permissions strictly necessary for the application."
   },
+  "SECURITY": {
+    "NOTE_TITLE": "Important Note",
+    "NOTE_MSG": "The security options below are applied with docker run, not in the Dockerfile. They will be documented in the preview.",
+    "BASE_TITLE": "Basic Options",
+    "BASE_DESC": "Fundamental security configurations",
+    "READONLY": "Read-only root filesystem",
+    "NONEWPRIV": "Prevent privilege escalation",
+    "CAP_TITLE": "Linux Capabilities",
+    "CAP_DESC": "Fine-grained control over container permissions",
+    "CAP_SELECT": "Select a capability",
+    "CAP_ADD": "Add",
+    "PROFILE_TITLE": "Security Profiles",
+    "PROFILE_DESC": "Configure advanced security profiles",
+    "RECO_TITLE": "Security Recommendations",
+    "RECO_DESC": "Best practices for optimal security",
+    "RECO_PRIV": "Principle of least privilege",
+    "RECO_PRIV_DESC": "Remove all unnecessary capabilities and use a non-root user.",
+    "RECO_FS": "Read-only filesystem",
+    "RECO_FS_DESC": "Enable --read-only and use temporary volumes for writable directories.",
+    "RECO_AUDIT": "Monitoring and auditing",
+    "RECO_AUDIT_DESC": "Use tools like Falco to monitor suspicious activity in real time."
+  },
   "COMMON": {
     "BACK_HOME": "Back",
     "NEXT_INSTRUCT": "Next: Instructions",
@@ -192,7 +216,9 @@
     	"BACK_PORT": "Back: Ports & Network",
   "NEXT_USER": "Next: Users",
   "BACK_VOLUMES": "Back: Volumes",
-    "NEXT_SECURITY": "Next: Security"
+    "NEXT_SECURITY": "Next: Security",
+     "BACK_USER": "Back: Users",
+    "NEXT_REVIEW": "Next: Preview"
 
   }
 

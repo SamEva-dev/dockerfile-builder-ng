@@ -13,6 +13,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ApercuComponent } from '../apercu/apercu.component';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 
 interface KeyValue { key: string; value: string; }
 
@@ -20,7 +25,6 @@ interface KeyValue { key: string; value: string; }
   selector: 'app-configuration',
   imports: [
     CommonModule,
-    ApercuComponent,
     MatIconModule,
     TranslatePipe,
     MatFormFieldModule,
@@ -33,12 +37,18 @@ interface KeyValue { key: string; value: string; }
     InputTextModule,
     ButtonModule,
     ToggleSwitchModule,
-    Button],
+    Button,
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent
+],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
 })
 export class ConfigurationComponent {
-  constructor(translate: TranslateService) {}
+constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
 
    // Données du Dockerfile précédant (étape précédente, instructions…)
   @Input() baseDockerfile: string = '';
@@ -114,6 +124,107 @@ stopsignal = 'SIGTERM'; // valeur par défaut
     return out.trim();
   }
 
+  get dockerComposePreview(): string {
+  let imageLine = this.baseDockerfile.split('\n')[0]; // ex: FROM node:20
+  const image = imageLine.replace('FROM ', '').trim();
+
+  let out = `version: '3.8'
+services:
+  app:
+    image: ${image}`;
+
+  if (this.workdir) {
+    out += `\n    working_dir: ${this.workdir}`;
+  }
+
+  if (this.envVars.length) {
+    out += `\n    environment:`;
+    for (let env of this.envVars) {
+      if (env.key && env.value) {
+        out += `\n      - ${env.key}=${env.value}`;
+      }
+    }
+  }
+
+  if (this.labels.length) {
+    out += `\n    labels:`;
+    for (let l of this.labels) {
+      if (l.key && l.value) {
+        out += `\n      ${l.key}: "${l.value}"`;
+      }
+    }
+  }
+
+  if (this.user) {
+    out += `\n    user: "${this.user}"`;
+  }
+
+  if (this.shell) {
+    out += `\n    entrypoint: [ "${this.shell}" ]`;
+  }
+
+  if (this.stopsignal) {
+    out += `\n    stop_signal: ${this.stopsignal}`;
+  }
+
+  if (this.healthcheckEnabled && this.healthCmd) {
+    out += `\n    healthcheck:
+      test: [ "CMD", "${this.healthCmd}" ]
+      interval: ${this.healthInterval}
+      timeout: ${this.healthTimeout}
+      retries: ${this.healthRetries}`;
+  }
+
+  return out.trim();
+}
+
+get dockerRunCommand(): string {
+  let imageLine = this.baseDockerfile.split('\n')[0]; // FROM xxx
+  const image = imageLine.replace('FROM ', '').trim();
+
+  if (!image) return '';
+
+  let cmd = `docker run --name custom-container`;
+
+  if (this.workdir) {
+    cmd += ` -w ${this.workdir}`;
+  }
+
+  for (let env of this.envVars) {
+    if (env.key && env.value) {
+      cmd += ` -e ${env.key}=${env.value}`;
+    }
+  }
+
+  for (let l of this.labels) {
+    if (l.key && l.value) {
+      cmd += ` --label ${l.key}="${l.value}"`;
+    }
+  }
+
+  if (this.user) {
+    cmd += ` --user ${this.user}`;
+  }
+
+  if (this.stopsignal) {
+    cmd += ` --stop-signal=${this.stopsignal}`;
+  }
+
+  if (this.healthcheckEnabled && this.healthCmd) {
+    cmd += ` --health-cmd="${this.healthCmd}" --health-interval=${this.healthInterval} --health-timeout=${this.healthTimeout} --health-retries=${this.healthRetries}`;
+  }
+
+  if (this.shell) {
+    cmd += ` --entrypoint ${this.shell}`;
+  }
+
+  cmd += ` ${image}`;
+
+  return cmd.trim();
+}
+
+
+
   onCopyDockerfile() {
     if (this.dockerfilePreview)
       navigator.clipboard.writeText(this.dockerfilePreview);
@@ -133,7 +244,11 @@ stopsignal = 'SIGTERM'; // valeur par défaut
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+    this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/port-reseau']);
   }
 
 }

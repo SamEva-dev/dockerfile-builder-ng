@@ -13,6 +13,11 @@ import { SelectModule } from 'primeng/select';
 import { ApercuComponent } from '../apercu/apercu.component';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CommonModule } from '@angular/common';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 
 interface PortEntry {
   number: number | null;
@@ -27,7 +32,6 @@ interface PortEntry {
   selector: 'app-port-reseau',
   imports: [
     CommonModule,
-    ApercuComponent,
     MatIconModule,
     TranslatePipe,
     MatFormFieldModule,
@@ -40,14 +44,18 @@ interface PortEntry {
     InputTextModule,
     ButtonModule,
     ToggleSwitchModule,
-  ],
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent
+],
   templateUrl: './port-reseau.component.html',
   styleUrl: './port-reseau.component.scss'
 })
 export class PortReseauComponent {
 
-    constructor(translate: TranslateService) {}
-
+  constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
     @Input() baseDockerfile = '';
 
   // Liste des ports à exposer
@@ -110,6 +118,45 @@ export class PortReseauComponent {
     return preview.trim();
   }
 
+  get dockerComposePreview(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0]; // FROM node:20
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let out = `version: '3.8'
+services:
+  app:
+    image: ${image}`;
+
+  if (this.ports.length > 0) {
+    out += `\n    ports:`;
+    this.ports.forEach(p => {
+      const port = `${p.number}${p.protocol === 'UDP' ? '/udp' : ''}`;
+      out += `\n      - "${p.number}:${p.number}${p.protocol === 'UDP' ? '/udp' : ''}"`;
+    });
+  }
+
+  return out.trim();
+}
+
+get dockerRunCommand(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0]; // FROM node:20
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let cmd = `docker run --name custom-container`;
+
+  this.ports.forEach(p => {
+    const protocol = p.protocol === 'UDP' ? '/udp' : '';
+    cmd += ` -p ${p.number}:${p.number}${protocol}`;
+  });
+
+  cmd += ` ${image}`;
+  return cmd.trim();
+}
+
+
+
   onCopyDockerfile() {
     if (this.dockerfilePreview)
       navigator.clipboard.writeText(this.dockerfilePreview);
@@ -129,6 +176,10 @@ export class PortReseauComponent {
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+   this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/volumes']);
   }
 }

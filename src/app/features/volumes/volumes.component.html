@@ -129,11 +129,21 @@
 
     <!-- PREVIEW -->
     <div class="right-side">
-      <app-apercu
-        [content]="dockerfilePreview"
-        (copy)=" onCopyDockerfile()"
-        (download)="onDownloadDockerfile()"
-      ></app-apercu>
+      <dockerfile-preview
+            [content]="dockerfilePreview"
+            (copy)="onCopyDockerfile()"
+            (download)="onDownloadDockerfile()"
+        ></dockerfile-preview>
+        <dockerfile-compose-preview
+            [content]="dockerComposePreview"
+            (copy)="onCopyDockerfile()"
+            (download)="onDownloadDockerfile()"
+        ></dockerfile-compose-preview>
+        <commands-preview
+            [content]="dockerRunCommand"
+            (copy)="onCopyDockerfile()"
+            (download)="onDownloadDockerfile()"
+        ></commands-preview>
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { stepperGuard } from '../core/guards/stepper.guard';
+import { stepperGuard } from './core/guards/stepper.guard';
 
 export const routes: Routes = [
   {

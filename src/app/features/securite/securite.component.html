@@ -20,10 +20,10 @@
         </ng-template>
         <div class="subtitle">{{ 'SECURITY.BASE_DESC' | translate }}</div>
         <div class="options-list">
-          <p-checkbox [(ngModel)]="readOnlyRoot" binary="true"></p-checkbox>
+          <p-toggleswitch [(ngModel)]="readOnlyRoot" binary="true"></p-toggleswitch>
           <label>{{ 'SECURITY.READONLY' | translate }}</label>
           <br>
-          <p-checkbox [(ngModel)]="noNewPrivs" binary="true"></p-checkbox>
+          <p-toggleswitch [(ngModel)]="noNewPrivs" binary="true"></p-toggleswitch>
           <label>{{ 'SECURITY.NONEWPRIV' | translate }}</label>
         </div>
       </p-card>
@@ -48,19 +48,15 @@
               class="cap-name-select"
               placeholder="{{ 'SECURITY.CAP_SELECT' | translate }}"
             ></p-select>
-            <button
-              pButton
-              icon="pi pi-trash"
-              class="delete-btn"
-              styleClass="p-button-rounded p-button-text"
-              aria-label="Supprimer"
-              (click)="removeCapability(i)"
-              *ngIf="capabilities.length > 1">
-            </button>
+            <button pButton pRipple type="button" icon="pi pi-trash"
+                class="p-button-text p-button-rounded delete-btn"
+                (click)="removeCapability(i)"
+                aria-label="Supprimer"
+              ></button>
           </div>
         </div>
         <div class="btn-row">
-          <p-button label="{{ 'SECURITY.CAP_ADD' | translate }}" icon="pi pi-plus" (onClick)="addCapability()" class="p-button-info"></p-button>
+          <p-button label="{{ 'SECURITY.CAP_ADD' | translate }}" icon="pi pi-plus" (onClick)="addCapability()" class="btn-blue-right"></p-button>
         </div>
       </p-card>
 
@@ -103,22 +99,39 @@
       </p-card>
 
       <div class="bottom-actions">
-        <button pButton type="button" class="p-button-text">
-          {{ 'COMMON.BACK_USER' | translate }}
-        </button>
-        <button pButton type="button" class="p-button-primary">
-          {{ 'COMMON.NEXT_REVIEW' | translate }}
-        </button>
+        <p-button 
+            label="{{ 'COMMON.BACK_USER' | translate }}" 
+            icon="pi pi-arrow-left"
+            class="nav-btn nav-btn-prev"
+            (click)="onPrevious()"
+            severity="secondary"/>
+        <p-button 
+            label="{{ 'COMMON.NEXT_REVIEW' | translate }}" 
+            (click)="onNext()"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            class="nav-btn nav-btn-next btn-blue-right"
+            />
       </div>
     </div>
 
     <!-- COLONNE DROITE -->
     <div class="right-side">
-      <app-apercu
-        [content]="dockerfilePreview"
-        (copy)="onCopyDockerfile()"
-        (download)="onDownloadDockerfile()"
-      ></app-apercu>
+      <dockerfile-preview
+                    [content]="dockerfilePreview"
+                    (copy)="onCopyDockerfile()"
+                    (download)="onDownloadDockerfile()"
+                ></dockerfile-preview>
+                <dockerfile-compose-preview
+                    [content]="dockerComposePreview"
+                    (copy)="onCopyDockerfile()"
+                    (download)="onDownloadDockerfile()"
+                ></dockerfile-compose-preview>
+                <commands-preview
+                    [content]="dockerRunCommand"
+                    (copy)="onCopyDockerfile()"
+                    (download)="onDownloadDockerfile()"
+                ></commands-preview>
     </div>
   </div>
 </div>

@@ -2,11 +2,11 @@ import { Component, inject } from '@angular/core';
 
 import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { MENU_ITEMS } from '../../../core/config/menu.config';
 import { TranslateModule, TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
-import { NavigationService } from '../../../core/services/navigation.service';
 import { DrawerModule } from 'primeng/drawer';
+import { MENU_ITEMS } from '../../core/config/menu.config';
+import { NavigationService } from '../../core/services/navigation.service';
 
 
 @Component({

@@ -13,6 +13,11 @@ import { SelectModule } from 'primeng/select';
 import { ApercuComponent } from '../apercu/apercu.component';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CommonModule } from '@angular/common';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 
 
 interface VolumeEntry {
@@ -26,7 +31,6 @@ interface VolumeEntry {
   selector: 'app-volumes',
   imports: [
     CommonModule,
-    ApercuComponent,
     MatIconModule,
     TranslatePipe,
     MatFormFieldModule,
@@ -38,12 +42,18 @@ interface VolumeEntry {
     SelectModule,
     InputTextModule,
     ButtonModule,
-    ToggleSwitchModule,],
+    ToggleSwitchModule,
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent
+],
   templateUrl: './volumes.component.html',
   styleUrl: './volumes.component.scss'
 })
 export class VolumesComponent {
-constructor(translate: TranslateService) {}
+constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
 
 @Input() baseDockerfile: string = '';
 
@@ -104,6 +114,45 @@ constructor(translate: TranslateService) {}
     return preview.trim();
   }
 
+  get dockerComposePreview(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0];
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let out = `version: '3.8'
+services:
+  app:
+    image: ${image}`;
+
+  if (this.volumes.length > 0) {
+    out += `\n    volumes:`;
+    this.volumes.forEach(v => {
+      out += `\n      - ${v.path}:${v.path}  # ${v.description || 'volume'}`;
+    });
+  }
+
+  return out.trim();
+}
+
+get dockerRunCommand(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0];
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let cmd = `docker run`;
+
+  if (this.volumes.length > 0) {
+    this.volumes.forEach(v => {
+      cmd += ` -v ${v.path}:${v.path}`;
+    });
+  }
+
+  cmd += ` ${image}`;
+  return cmd.trim();
+}
+
+
+
   // Liste des types de volume
   volumeTypes = [
     { label: 'Volume nommé', value: 'named' },
@@ -130,6 +179,10 @@ constructor(translate: TranslateService) {}
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+    this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/utilisateurs']);
   }
 }

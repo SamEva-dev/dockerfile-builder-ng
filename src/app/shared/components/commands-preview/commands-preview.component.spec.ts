@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ApercuComponent } from './apercu.component';
+import { CommandsPreviewComponent } from './commands-preview.component';
 
-describe('ApercuComponent', () => {
-  let component: ApercuComponent;
-  let fixture: ComponentFixture<ApercuComponent>;
+describe('CommandsPreviewComponent', () => {
+  let component: CommandsPreviewComponent;
+  let fixture: ComponentFixture<CommandsPreviewComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ApercuComponent]
+      imports: [CommandsPreviewComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ApercuComponent);
+    fixture = TestBed.createComponent(CommandsPreviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

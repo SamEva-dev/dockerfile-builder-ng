@@ -7,6 +7,11 @@ import { ButtonModule } from 'primeng/button';
 import { CommonModule, NgIf } from '@angular/common';
 import { CardModule } from "primeng/card";
 import { FormsModule } from '@angular/forms';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 
 export interface Instruction {
   type: string;
@@ -19,19 +24,22 @@ export interface Instruction {
   imports: [
     CommonModule,
     FormsModule,
-    ApercuComponent,
     TranslatePipe,
     MatIconModule,
-    ApercuComponent,
     ButtonModule,
     SelectModule,
-    CardModule
+    CardModule,
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent
 ],
   templateUrl: './instruction.component.html',
   styleUrl: './instruction.component.scss'
 })
 export class InstructionComponent {
-constructor(translate: TranslateService) {}
+constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
 // Données de la preview précédente (ex : FROM ...), à concaténer
   @Input() baseDockerfile = '';
 
@@ -76,6 +84,58 @@ constructor(translate: TranslateService) {}
     }
     return preview.trim();
   }
+
+  get dockerComposePreview(): string {
+    const imageLine = this.baseDockerfile.split('\n')[0];
+    const image = imageLine.replace('FROM ', '').trim();
+    if (!image) return '';
+
+    let out = `version: '3.8'
+  services:
+    app:
+      image: ${image}`;
+
+    if (this.instructions.length > 0) {
+      out += `\n    command: >\n      sh -c "`;
+
+      this.instructions.forEach((ins, index) => {
+        // On ignore les commentaires ici (inexécutables en docker-compose)
+        if (ins.type.toUpperCase() === 'RUN') {
+          out += ins.content + (index < this.instructions.length - 1 ? ' && ' : '');
+        }
+      });
+
+      console.log('Generated command:', out);
+
+      out += `"`;
+    }
+console.log('Generated command2:', out);
+  return out.trim();
+}
+
+get dockerRunCommand(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0]; // FROM node:20
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let cmd = `docker run --name custom-container ${image}`;
+
+  // Construire les RUN sous forme de commande shell
+  const runParts: string[] = [];
+  this.instructions.forEach(ins => {
+    if (ins.type.toUpperCase() === 'RUN') {
+      runParts.push(ins.content);
+    }
+  });
+
+  if (runParts.length > 0) {
+    cmd += ` sh -c "${runParts.join(' && ')}"`;
+  }
+
+  return cmd.trim();
+}
+
+
   onCopyDockerfile() {
     if (this.dockerfilePreview)
       navigator.clipboard.writeText(this.dockerfilePreview);
@@ -95,7 +155,11 @@ constructor(translate: TranslateService) {}
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+    this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/configuration']);
   }
 
 }

@@ -13,12 +13,16 @@ import { SelectModule } from 'primeng/select';
 import { ApercuComponent } from '../apercu/apercu.component';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { CommonModule } from '@angular/common';
+import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
+import { DockerDataService } from '../../core/services/docker-data.service';
+import { Router } from '@angular/router';
+import { DockerfileComposePreviewComponent } from "../../shared/components/dockerfile-compose-preview/dockerfile-compose-preview.component";
+import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 
 @Component({
   selector: 'app-utilisateurs',
   imports: [
     CommonModule,
-    ApercuComponent,
     MatIconModule,
     TranslatePipe,
     MatFormFieldModule,
@@ -31,12 +35,17 @@ import { CommonModule } from '@angular/common';
     InputTextModule,
     ButtonModule,
     ToggleSwitchModule,
-  ],
+    DockerfilePreviewComponent,
+    DockerfileComposePreviewComponent,
+    CommandsPreviewComponent
+],
   templateUrl: './utilisateurs.component.html',
   styleUrl: './utilisateurs.component.scss'
 })
 export class UtilisateursComponent {
-  constructor(translate: TranslateService) {}
+  constructor(translate: TranslateService, 
+  private dataService: DockerDataService, 
+private router: Router ) {}
 
   @Input() baseDockerfile = '';
 
@@ -95,6 +104,54 @@ shell = 'sh'; // valeur par défaut
     return out.trim();
   }
 
+  get dockerComposePreview(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0];
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let out = `version: '3.8'
+services:
+  app:
+    image: ${image}`;
+
+  // Sélection d’un utilisateur existant
+  if (!this.createUser && this.selectedExistingUser) {
+    out += `\n    user: "${this.selectedExistingUser}"`;
+  }
+
+  // Création d’un utilisateur personnalisé (note : cette partie ne peut pas être traduite en YAML sans Dockerfile)
+  if (this.createUser && this.username) {
+    out += `\n    # ATTENTION : La création d'utilisateur nécessite des instructions RUN dans le Dockerfile`;
+    out += `\n    user: "${this.username}"`;
+  }
+
+  return out.trim();
+}
+
+get dockerRunCommand(): string {
+  const imageLine = this.baseDockerfile.split('\n')[0];
+  const image = imageLine.replace('FROM ', '').trim();
+  if (!image) return '';
+
+  let cmd = `docker run`;
+
+  // Utilisateur existant
+  if (!this.createUser && this.selectedExistingUser) {
+    cmd += ` --user ${this.selectedExistingUser}`;
+  }
+
+  // Utilisateur personnalisé
+  if (this.createUser && this.username) {
+    cmd += ` --user ${this.username}`;
+    cmd += `  # L'utilisateur ${this.username} doit avoir été créé via le Dockerfile`;
+  }
+
+  cmd += ` ${image}`;
+  return cmd.trim();
+}
+
+
+
   onCopyDockerfile() {
     if (this.dockerfilePreview)
       navigator.clipboard.writeText(this.dockerfilePreview);
@@ -116,7 +173,11 @@ shell = 'sh'; // valeur par défaut
     // Ta logique "retour" ici
   }
   onNext() {
-    // Ta logique "suivant" ici
+    this.dataService.updateDockerFile(this.dockerfilePreview);
+    this.dataService.updateDockerCompose(this.dockerComposePreview);
+    this.dataService.updateDockerCommand(this.dockerRunCommand);
+
+    this.router.navigate(['/securite']);
   }
 
 

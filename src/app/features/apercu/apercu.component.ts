@@ -6,6 +6,8 @@ import { Card } from "primeng/card";
 import { CommonModule } from '@angular/common';
 import { Button, ButtonModule } from "primeng/button";
 import { ButtonGroupModule } from 'primeng/buttongroup';
+import { Observable } from 'rxjs';
+import { DockerDataService } from '../../core/services/docker-data.service';
 
 @Component({
   selector: 'app-apercu',
@@ -13,24 +15,31 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
     CommonModule,
     MatIconModule,
     MatFormFieldModule,
-    TranslatePipe,
     ButtonModule,
     ButtonGroupModule,
-    Button
 ],
   templateUrl: './apercu.component.html',
   styleUrl: './apercu.component.scss'
 })
 export class ApercuComponent implements OnInit {
-constructor(private  translate: TranslateService) {}
-  
+constructor(private  translate: TranslateService,
+  private dataService: DockerDataService
+) {
 
- @Input() content: string = '';
-  @Output() copy = new EventEmitter<void>();
-  @Output() download = new EventEmitter<void>();
-
+  this.dockerFile$ = this.dataService.dockerFile$;
+  this.dockerCompose$ = this.dataService.dockerCompose$;
+  this.dockerCommand$ = this.dataService.dockerCommand$;
+}
   ngOnInit(): void {
-   
-    this.content= '# Your Dockerfile will appear here...';
+    console.log('Aperçu component initialized');
+    console.log('dockerFile:', this.dockerFile$);
+    console.log('dockerCompose:', this.dockerCompose$);
+    console.log('dockerCommand:', this.dockerCommand$);
   }
+  
+dockerFile$: Observable<string> = new Observable<string>();
+dockerCompose$: Observable<string> = new Observable<string>();
+dockerCommand$: Observable<string> = new Observable<string>();
+
+ 
 }
