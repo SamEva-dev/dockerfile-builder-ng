@@ -16,8 +16,8 @@ import { CommonModule } from '@angular/common';
 import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
 import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
-import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 import { DockerComposePreviewComponent } from "../../shared/components/docker-compose-preview/docker-compose-preview.component";
+import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
 
 interface PortEntry {
   number: number | null;
@@ -45,8 +45,8 @@ interface PortEntry {
     ButtonModule,
     ToggleSwitchModule,
     DockerfilePreviewComponent,
-    CommandsPreviewComponent,
-    DockerComposePreviewComponent
+    DockerComposePreviewComponent,
+    DockerCommandPreviewComponent
 ],
   templateUrl: './port-reseau.component.html',
   styleUrl: './port-reseau.component.scss'

@@ -16,9 +16,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
 import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
-import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 import { DividerModule } from 'primeng/divider';
 import { DockerComposePreviewComponent } from '../../shared/components/docker-compose-preview/docker-compose-preview.component';
+import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
 
 
 interface DockerImage {
@@ -46,8 +46,8 @@ interface DockerImage {
     Button,
     DockerfilePreviewComponent,
     DockerComposePreviewComponent,
-    CommandsPreviewComponent,
-    DividerModule
+    DividerModule,
+    DockerCommandPreviewComponent
 ],
   templateUrl: './base-image.component.html',
   styleUrl: './base-image.component.scss'

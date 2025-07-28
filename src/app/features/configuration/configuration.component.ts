@@ -16,8 +16,8 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
 import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
-import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 import { DockerComposePreviewComponent } from '../../shared/components/docker-compose-preview/docker-compose-preview.component';
+import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
 
 interface KeyValue { key: string; value: string; }
 
@@ -40,7 +40,7 @@ interface KeyValue { key: string; value: string; }
     Button,
     DockerfilePreviewComponent,
     DockerComposePreviewComponent,
-    CommandsPreviewComponent
+    DockerCommandPreviewComponent
 ],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'

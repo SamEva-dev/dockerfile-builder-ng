@@ -10,8 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { DockerfilePreviewComponent } from "../../shared/components/dockerfile-preview/dockerfile-preview.component";
 import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
-import { CommandsPreviewComponent } from "../../shared/components/commands-preview/commands-preview.component";
 import { DockerComposePreviewComponent } from '../../shared/components/docker-compose-preview/docker-compose-preview.component';
+import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
 
 export interface Instruction {
   type: string;
@@ -31,7 +31,7 @@ export interface Instruction {
     CardModule,
     DockerfilePreviewComponent,
     DockerComposePreviewComponent,
-    CommandsPreviewComponent
+    DockerCommandPreviewComponent
 ],
   templateUrl: './instruction.component.html',
   styleUrl: './instruction.component.scss'

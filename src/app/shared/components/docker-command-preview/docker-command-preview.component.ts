@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Button, ButtonModule } from 'primeng/button';
 import { ButtonGroupModule } from 'primeng/buttongroup';
+import { DockerGeneratorService } from '../../../core/services/docker-generator.service';
 
 
 @Component({
-  selector: 'commands-preview',
+  selector: 'docker-command-preview',
   imports: [
     CommonModule,
     MatIconModule,
@@ -18,16 +19,19 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
     ButtonGroupModule,
     Button
   ],
-  templateUrl: './commands-preview.component.html',
-  styleUrl: './commands-preview.component.scss'
+  templateUrl: './docker-command-preview.component.html',
+  styleUrl: './docker-command-preview.component.scss'
 })
-export class CommandsPreviewComponent {
+export class DockerCommandPreviewComponent {
 
-  constructor(private  translate: TranslateService) {}
+  private translate = inject(TranslateService)
+  private dockerService = inject(DockerGeneratorService)
   
   @Input() content: string = '';
   @Output() copy = new EventEmitter<void>();
   @Output() download = new EventEmitter<void>();
+
+  cli$ = this.dockerService.cliPreview;
 
   ngOnInit(): void {
    
