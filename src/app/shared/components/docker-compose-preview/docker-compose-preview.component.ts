@@ -8,7 +8,7 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
 
 
 @Component({
-  selector: 'dockerfile-compose-preview',
+  selector: 'docker-compose-preview',
   imports: [
     CommonModule,
     MatIconModule,
@@ -18,10 +18,10 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
     ButtonGroupModule,
     Button
   ],
-  templateUrl: './dockerfile-compose-preview.component.html',
-  styleUrl: './dockerfile-compose-preview.component.scss'
+  templateUrl: './docker-compose-preview.component.html',
+  styleUrl: './docker-compose-preview.component.scss'
 })
-export class DockerfileComposePreviewComponent {
+export class DockerComposePreviewComponent {
 
   constructor(private  translate: TranslateService) {}
   
