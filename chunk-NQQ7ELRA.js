@@ -1,0 +1,1 @@
+import{Wb as r,bb as o,yb as n,zb as p}from"./chunk-MXPEK2PN.js";var a=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=o({type:t,selectors:[["app-export"]],decls:2,vars:0,template:function(e,s){e&1&&(n(0,"p"),r(1,"export works!"),p())},encapsulation:2})};export{a as ExportComponent};
