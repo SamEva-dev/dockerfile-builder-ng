@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { ApercuComponent } from "../apercu/apercu.component";
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatIconModule } from "@angular/material/icon";
@@ -12,12 +12,37 @@ import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
 import { DockerComposePreviewComponent } from '../../shared/components/docker-compose-preview/docker-compose-preview.component';
 import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
+import { DockerGeneratorService } from '../../core/services/docker-generator.service';
+import { BuildOptions, DockerComposeConfig, ServiceDefinition } from '../../core/models/docker-compose.model';
 
-export interface Instruction {
-  type: string;
+type InstructionTypeValue = 'RUN' | 'WORKDIR' | 'ENV' | 'VARENV'| 'COPY' | 'EXPOSE' | 'CMD' | 'ENTRYPOINT' | 'ARG' | 'USER' | 'LABEL' | 'ADD';
+
+interface InstructionTypeOption {
+  label: string;
+  value: InstructionTypeValue;
+  desc: string;
+}
+interface BuilderInstruction {
+  type: InstructionTypeValue;
   content: string;
   description?: string;
 }
+
+const INSTRUCTION_TYPES: InstructionTypeOption[] = [
+  { value: 'RUN', label: 'RUN', desc: 'INSTRUCTION.TYPE_RUN' },
+  { value: 'COPY', label: 'COPY', desc: 'INSTRUCTION.TYPE_COPY' },
+  { value: 'ADD', label: 'ADD', desc: 'INSTRUCTION.TYPE_ADD' },
+  { value: 'ENV', label: 'ENV', desc: 'INSTRUCTION.TYPE_ENV' },
+  { label: 'VARENV', value: 'VARENV', desc: 'INSTRUCTION.TYPE_VARENV' },
+  { value: 'WORKDIR', label: 'WORKDIR', desc: 'INSTRUCTION.TYPE_WORKDIR' },
+  { value: 'EXPOSE', label: 'EXPOSE', desc: 'INSTRUCTION.TYPE_EXPOSE' },
+  { value: 'LABEL', label: 'LABEL', desc: 'INSTRUCTION.TYPE_LABEL' },
+  { label: 'CMD', value: 'CMD', desc: 'INSTRUCTION.TYPE_CMD' },
+  { label: 'ENTRYPOINT', value: 'ENTRYPOINT', desc: 'INSTRUCTION.TYPE_ENTRYPOINT' },
+  { label: 'ARG', value: 'ARG', desc: 'INSTRUCTION.TYPE_ARG' },
+  { label: 'USER', value: 'USER', desc: 'INSTRUCTION.TYPE_USER' },
+  // Ajoute d'autres instructions si besoin
+];
 
 @Component({
   selector: 'app-instruction',
@@ -34,130 +59,139 @@ export interface Instruction {
     DockerCommandPreviewComponent
 ],
   templateUrl: './instruction.component.html',
-  styleUrl: './instruction.component.scss'
+  styleUrl: './instruction.component.scss',
+   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InstructionComponent {
-constructor(translate: TranslateService, 
-  private dataService: DockerDataService, 
-private router: Router ) {}
-// Données de la preview précédente (ex : FROM ...), à concaténer
-  @Input() baseDockerfile = '';
+private translate = inject(TranslateService)
+  private dockerService = inject(DockerGeneratorService)
+  private router = inject(Router)
+ // --- Signals pour la liste d'instructions ---
+  instructions = signal<BuilderInstruction[]>([]);
 
-  // Liste dynamique des instructions
-  instructions: Instruction[] = [];
+  // Pour le template (Primeng p-select)
+  instructionTypes = INSTRUCTION_TYPES;
 
-  // Dropdown instruction types (clé, label, description FR/EN pour traduction)
-  instructionTypes = [
-  { value: 'RUN', label: 'RUN', desc: 'INSTRUCTION.TYPE_RUN' },
-  { value: 'COPY', label: 'COPY', desc: 'INSTRUCTION.TYPE_COPY' },
-  { value: 'ADD', label: 'ADD', desc: 'INSTRUCTION.TYPE_ADD' },
-  { value: 'ENV', label: 'ENV', desc: 'INSTRUCTION.TYPE_ENV' },
-  { value: 'WORKDIR', label: 'WORKDIR', desc: 'INSTRUCTION.TYPE_WORKDIR' },
-  { value: 'EXPOSE', label: 'EXPOSE', desc: 'INSTRUCTION.TYPE_EXPOSE' },
-  { value: 'LABEL', label: 'LABEL', desc: 'INSTRUCTION.TYPE_LABEL' }
-  // Ajoute d'autres instructions si besoin
-];
+  // --- NAVIGATION (wizard parent) ---
+  @Output() previous = new EventEmitter<void>();
+  @Output() next = new EventEmitter<void>();
 
-  // Ajoute une nouvelle étape
-  addInstruction() {
-    this.instructions.push({ type: 'COPY', content: '', description: '' });
-  }
+  // --- Preview live depuis le service central ---
+  dockerfilePreview = this.dockerService.dockerfilePreview;
+  dockerComposePreview = this.dockerService.composePreview;
+  dockerRunCommand = this.dockerService.cliPreview;
 
-  // Supprime une étape et renumérote
-  removeInstruction(idx: number) {
-    this.instructions.splice(idx, 1);
-    // Si plus d’instructions : rien à faire, elles sont déjà renumérotées (ngFor)
-    // Si aucune instruction restante, tu reviens à l’écran initial (handled in template)
-  }
 
-  // Génère le texte complet du Dockerfile (base + instructions custom)
-  get dockerfilePreview() {
-    let preview = this.baseDockerfile;
-    if (this.instructions.length > 0) {
-      preview += '\n# {{ "INSTRUCTION.PREVIEW_COMMENT" | translate }}\n';
-      this.instructions.forEach(ins => {
-        if (ins.description && ins.description.trim() !== '') {
-          preview += `\n# ${ins.description}`;
-        }
-        preview += `\n${ins.type} ${ins.content}`;
-      });
-    }
-    return preview.trim();
-  }
 
-  get dockerComposePreview(): string {
-    const imageLine = this.baseDockerfile.split('\n')[0];
-    const image = imageLine.replace('FROM ', '').trim();
-    if (!image) return '';
-
-    let out = `version: '3.8'
-  services:
-    app:
-      image: ${image}`;
-
-    if (this.instructions.length > 0) {
-      out += `\n    command: >\n      sh -c "`;
-
-      this.instructions.forEach((ins, index) => {
-        // On ignore les commentaires ici (inexécutables en docker-compose)
-        if (ins.type.toUpperCase() === 'RUN') {
-          out += ins.content + (index < this.instructions.length - 1 ? ' && ' : '');
-        }
-      });
-
-      console.log('Generated command:', out);
-
-      out += `"`;
-    }
-console.log('Generated command2:', out);
-  return out.trim();
+  // --- Méthodes pour gérer la liste ---
+ addInstruction() {
+  this.instructions.set([
+    ...this.instructions(),
+    { type: 'RUN', content: '', description: '' }
+  ]);
+  this.updateDockerfileSignal();
 }
 
-get dockerRunCommand(): string {
-  const imageLine = this.baseDockerfile.split('\n')[0]; // FROM node:20
-  const image = imageLine.replace('FROM ', '').trim();
-  if (!image) return '';
-
-  let cmd = `docker run --name custom-container ${image}`;
-
-  // Construire les RUN sous forme de commande shell
-  const runParts: string[] = [];
-  this.instructions.forEach(ins => {
-    if (ins.type.toUpperCase() === 'RUN') {
-      runParts.push(ins.content);
-    }
-  });
-
-  if (runParts.length > 0) {
-    cmd += ` sh -c "${runParts.join(' && ')}"`;
-  }
-
-  return cmd.trim();
+// Suppression
+removeInstruction(idx: number) {
+  const updated = [...this.instructions()];
+  updated.splice(idx, 1);
+  this.instructions.set(updated);
+  this.updateDockerfileSignal();
 }
 
-
-  onCopyDockerfile() {
-    if (this.dockerfilePreview)
-      navigator.clipboard.writeText(this.dockerfilePreview);
+  // --- Trigger sur chaque modification d'instruction ---
+  onInstructionChange() {
+    this.updateDockerfileSignal();
   }
-  onDownloadDockerfile() {
-    if (!this.dockerfilePreview) return;
-    const blob = new Blob([this.dockerfilePreview], { type: 'text/plain' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'Dockerfile';
-    a.click();
-    window.URL.revokeObjectURL(url);
+
+  // --- Preview copy/download (optionnel) ---
+  onCopyDockerfile() { /* ... */ }
+  onDownloadDockerfile() { /* ... */ }
+
+  // --- Synchronisation avec le service central ---
+  updateDockerfileSignal() {
+    this.generateFileFromInstructions(this.instructions())
+    
+    this.generateComposeFromInstructions(this.instructions());
+
+    this.generateCommandFromInstructions(this.instructions())
+    
+  }
+
+  generateFileFromInstructions(instructions: BuilderInstruction[]) {
+    const base = this.dockerService.dockerfile();
+    console.log('Mise à jour Dockerfile avec instructions:', base);
+    this.dockerService.updateDockerfile({
+      ...(base || {}),
+      // Construit la section instructions pour la preview
+      install: {
+        type: 'custom',
+        commands: instructions.filter(i => !!i.content).map(i => this.getInstructionString(i))
+      }
+    });
+  }
+
+  generateComposeFromInstructions(instructions: BuilderInstruction[]) {
+    const buildOptions: BuildOptions = { context: './web' };
+    const currentCompose = this.dockerService.compose() ?? { version: '3.8', services: {} };
+
+    buildOptions.args = instructions
+      .filter(i => ['ARG', 'ENV', 'VARENV'].includes(i.type))
+      .map(i => i.content.trim());
+    //buildOptions.dockerfile = 'Dockerfile';
+    //buildOptions.cache_from = ['myrepo/web:latest'];
+    const base = this.dockerService.dockerfile();
+    const serviceDefinition: ServiceDefinition = {
+       build: buildOptions,
+       image: base?.baseImage,
+       environment: buildOptions.args,
+    };
+   
+    const dockerComposeConfig: DockerComposeConfig = {
+      ...currentCompose,
+      
+      services: {
+        ...currentCompose.services,
+        app: serviceDefinition,
+      },
+    };
+    this.dockerService.updateCompose(dockerComposeConfig);
+  }
+
+  generateCommandFromInstructions(instructions: BuilderInstruction[]) {
+    const command = this.dockerService.cli();
+    const instruc = instructions
+          .filter(i => ['ARG', 'ENV', 'VARENV'].includes(i.type))
+          .reduce((acc, inst) => {
+            const [key, value] = inst.content.split('=');
+            acc[key.trim()] = value?.trim() ?? '';
+            return acc;
+          }, {} as Record<string, string>);
+
+    this.dockerService.updateCLI({
+      ...command,
+      buildCommands: [
+       {
+        buildArgs: instruc
+       }
+      ]
+    });
+  }
+
+  getInstructionString(inst: BuilderInstruction): string {
+    if (inst.description)
+      return `${inst.type} ${inst.content} # ${inst.description}`;
+    return `${inst.type} ${inst.content}`;
   }
 
    onPrevious() {
-    // Ta logique "retour" ici
+    this.previous.emit();
+    this.router.navigate(['/base-image']);
   }
   onNext() {
-    this.dataService.updateDockerFile(this.dockerfilePreview);
-    this.dataService.updateDockerCompose(this.dockerComposePreview);
-    this.dataService.updateDockerCommand(this.dockerRunCommand);
+    this.updateDockerfileSignal();
+    this.next.emit();
 
     this.router.navigate(['/configuration']);
   }

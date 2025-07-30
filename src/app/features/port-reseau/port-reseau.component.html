@@ -20,7 +20,7 @@
           ></p-button>
         </div>
 
-        <ng-container *ngIf="ports.length === 0">
+        <ng-container *ngIf="ports().length === 0">
           <div class="init-content">
             <mat-icon class="init-icon">lan</mat-icon>
             <div class="empty-msg">{{ 'PORTS.EMPTY' | translate }}</div>
@@ -34,10 +34,10 @@
           </div>
         </ng-container>
 
-        <ng-container *ngIf="ports.length > 0">
+        <ng-container *ngIf="ports().length > 0">
           <div class="ports-list">
             <p-card
-              *ngFor="let port of ports; let i = index"
+              *ngFor="let port of ports(); let i = index"
               class="port-entry-card"
             >
               <div class="port-header">
@@ -55,9 +55,10 @@
                   <input
                     pInputText
                     [(ngModel)]="port.number"
-                    [readonly]="port.isCommon"
+                    
                     placeholder="Port..."
                     type="number"
+                    (ngModelChange)="updateAllSignals()"
                   />
                 </div>
                 <div class="form-group">
@@ -68,6 +69,7 @@
                       {label:'UDP',value:'UDP'}
                     ]"
                     [(ngModel)]="port.protocol"
+                    (ngModelChange)="updateAllSignals()"
                   ></p-select>
                 </div>
               </div>
@@ -77,7 +79,7 @@
                   pInputText
                   [(ngModel)]="port.description"
                   placeholder="Description"
-                  [readonly]="port.isCommon"
+                  (ngModelChange)="updateAllSignals()"
                 />
               </div>
             </p-card>
@@ -142,17 +144,17 @@
     <!-- PREVIEW -->
     <div class="right-side">
       <dockerfile-preview
-                    [content]="dockerfilePreview"
+                    [content]="dockerfilePreview()"
                     (copy)="onCopyDockerfile()"
                     (download)="onDownloadDockerfile()"
                 ></dockerfile-preview>
                 <docker-compose-preview
-                    [content]="dockerComposePreview"
+                    [content]="dockerComposePreview()"
                     (copy)="onCopyDockerfile()"
                     (download)="onDownloadDockerfile()"
                 ></docker-compose-preview>
                 <docker-command-preview
-                    [content]="dockerRunCommand"
+                    [content]="dockerRunCommand()"
                     (copy)="onCopyDockerfile()"
                     (download)="onDownloadDockerfile()"
                 ></docker-command-preview>

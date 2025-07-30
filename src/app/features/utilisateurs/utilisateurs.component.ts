@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -18,6 +18,7 @@ import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
 import { DockerComposePreviewComponent } from '../../shared/components/docker-compose-preview/docker-compose-preview.component';
 import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
+import { DockerGeneratorService } from '../../core/services/docker-generator.service';
 
 @Component({
   selector: 'app-utilisateurs',
@@ -43,122 +44,134 @@ import { DockerCommandPreviewComponent } from "../../shared/components/docker-co
   styleUrl: './utilisateurs.component.scss'
 })
 export class UtilisateursComponent {
-  constructor(translate: TranslateService, 
-  private dataService: DockerDataService, 
-private router: Router ) {}
-
-  @Input() baseDockerfile = '';
+  private translate = inject(TranslateService)
+  private dockerService = inject(DockerGeneratorService)
+  private router = inject(Router)
 
   // Mode création utilisateur
  shellOptions = [
-  { label: 'sh (par défaut)', value: 'sh' },
-  { label: 'bath', value: 'bath' },
+  { label: '/bin/sh (par défaut)', value: '/bin/sh' },
+  { label: '/bin/bash', value: '/bin/bash' },
   { label: 'zsh', value: 'zsh' },
-  { label: 'nologin (sécurisé)', value: 'nologin' },
+  { label: '/usr/sbin/nologin (sécurisé)', value: '/usr/sbin/nologin' },
   { label: '', value: '' }
 ];
-shell = 'sh'; // valeur par défaut
-  createUser = false;
+// Signaux principaux
+  createUser = signal<boolean>(false);
+  selectedExistingUser = signal<string>('');
 
-  // Form utilisateur custom
+  // Options
+  existingUsers = ['node', 'www-data', 'root'];
   userTypes = [
     { label: 'Utilisateur régulier (Ubuntu/Debian)', value: 'debian' },
     { label: 'Utilisateur système (Alpine/BusyBox)', value: 'alpine' }
   ];
-  userType = 'alpine';
-  username = 'appuser';
-  uid = '1001';
-  gid = '1001';
-  home = '';
 
-  // Utilisateurs connus
-  existingUsers = ['node', 'www-data', 'nobody', '1001'];
-  selectedExistingUser = '';
+  // shellOptions = [
+  //   { label: '/bin/sh', value: '/bin/sh' },
+  //   { label: '/bin/bash', value: '/bin/bash' },
+  //   { label: '/usr/sbin/nologin', value: '/usr/sbin/nologin' }
+  // ];
 
-  get isDebianUser() { 
-    return this.userType === 'debian'; 
+  // Paramètres de création d’utilisateur
+  userType = signal<'alpine' | 'debian'>('alpine');
+  username = signal<string>('appuser');
+  uid = signal<number>(1001);
+  gid = signal<number>(1001);
+  shell = signal<string>('/bin/sh');
+  home = signal<string>('/home/appuser');
+
+  // Navigation Wizard
+  @Output() previous = new EventEmitter<void>();
+  @Output() next = new EventEmitter<void>();
+
+  // Preview live
+  dockerfilePreview = this.dockerService.dockerfilePreview;
+  dockerComposePreview = this.dockerService.composePreview;
+  dockerRunCommand = this.dockerService.cliPreview;
+
+  // Gestion readonly UID/GID pour Debian
+  isDebianUser = computed(() => this.userType() === 'debian');
+
+
+  // Update live Docker configs
+  updateAllSignals() {
+    this.generateFileFromInstructions();
+    this.generateComposeFromInstructions();
+    this.generateCommandFromInstructions();
   }
 
-  // Génération du Dockerfile
-  get dockerfilePreview(): string {
-    let out = this.baseDockerfile;
-    out += `\n\n# Définir l'utilisateur d'exécution`;
-    if (this.createUser && this.username) {
-      out += `\n\n# Création d'un utilisateur personnalisé`;
-    if (this.userType === 'alpine') {
-      out += `\nRUN addgroup -g ${this.gid} -S ${this.username} && \\`;
-      out += `\n    adduser -u ${this.uid} -S ${this.username} -G ${this.username} -s /bin/${this.shell}`;
-      if (this.home) out += ` -h ${this.home}`;
-    } else {
-      out += `\nRUN groupadd -r ${this.username} && \\`;
-      out += `\n    useradd -r -g ${this.username} ${this.username} -s /bin/${this.shell}`;
-      if (this.home) out += ` -d ${this.home}`;
-      // UID/GID ne sont pas explicitement gérés ici pour Debian (ils sont désactivés dans le formulaire)
+  generateFileFromInstructions() {
+    const base = this.dockerService.dockerfile();
+
+    if (this.createUser()) {
+      this.dockerService.updateDockerfile({
+        ...(base || {}),
+        user: {
+          username: this.username(),
+          uid: this.uid(),
+          gid: this.gid(),
+          type: this.userType(),
+          shell: this.shell(),
+          home: this.home()
+        }
+      });
     }
-    
-    out += `\n\n# Définir l'utilisateur d'exécution\nUSER ${this.username}`;
-  
-    } else if (this.selectedExistingUser) {
-      out += `\nUSER ${this.selectedExistingUser}`;
+    else {
+      this.dockerService.updateDockerfile({
+        ...(base || {}),
+        user: {
+          username: this.selectedExistingUser()
+        }
+      });
     }
-    return out.trim();
+   
   }
 
-  get dockerComposePreview(): string {
-  const imageLine = this.baseDockerfile.split('\n')[0];
-  const image = imageLine.replace('FROM ', '').trim();
-  if (!image) return '';
-
-  let out = `version: '3.8'
-services:
-  app:
-    image: ${image}`;
-
-  // Sélection d’un utilisateur existant
-  if (!this.createUser && this.selectedExistingUser) {
-    out += `\n    user: "${this.selectedExistingUser}"`;
+  generateComposeFromInstructions() {
+    const baseCompose = this.dockerService.compose();
+    const services = { ...(baseCompose?.services || {}) };
+      services['web'] = {
+        ...services['web'],
+        user: this.createUser() ? this.username() : this.selectedExistingUser(),
+      };
+    this.dockerService.updateCompose({
+      ...(baseCompose || {}),
+      services
+    });
   }
 
-  // Création d’un utilisateur personnalisé (note : cette partie ne peut pas être traduite en YAML sans Dockerfile)
-  if (this.createUser && this.username) {
-    out += `\n    # ATTENTION : La création d'utilisateur nécessite des instructions RUN dans le Dockerfile`;
-    out += `\n    user: "${this.username}"`;
-  }
+  generateCommandFromInstructions() {
+  const baseCli = this.dockerService.cli() || {};
+  const user = this.createUser() ? this.username() : this.selectedExistingUser();
+  const shell = this.shell();
 
-  return out.trim();
-}
+  const runCommands = (baseCli.runCommands && baseCli.runCommands.length > 0)
+    ? baseCli.runCommands.map(cmd => ({
+        ...cmd,
+        user,
+        shell
+      }))
+    : [{
+        user,
+        shell
+      }];
 
-get dockerRunCommand(): string {
-  const imageLine = this.baseDockerfile.split('\n')[0];
-  const image = imageLine.replace('FROM ', '').trim();
-  if (!image) return '';
-
-  let cmd = `docker run`;
-
-  // Utilisateur existant
-  if (!this.createUser && this.selectedExistingUser) {
-    cmd += ` --user ${this.selectedExistingUser}`;
-  }
-
-  // Utilisateur personnalisé
-  if (this.createUser && this.username) {
-    cmd += ` --user ${this.username}`;
-    cmd += `  # L'utilisateur ${this.username} doit avoir été créé via le Dockerfile`;
-  }
-
-  cmd += ` ${image}`;
-  return cmd.trim();
+  this.dockerService.updateCLI({
+    ...baseCli,
+    runCommands
+  });
 }
 
 
 
   onCopyDockerfile() {
     if (this.dockerfilePreview)
-      navigator.clipboard.writeText(this.dockerfilePreview);
+      navigator.clipboard.writeText(this.dockerfilePreview());
   }
   onDownloadDockerfile() {
     if (!this.dockerfilePreview) return;
-    const blob = new Blob([this.dockerfilePreview], { type: 'text/plain' });
+    const blob = new Blob([this.dockerfilePreview()], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -170,12 +183,12 @@ get dockerRunCommand(): string {
   
 
    onPrevious() {
-    // Ta logique "retour" ici
+    this.previous.emit(); 
+    this.router.navigate(['/volumes']);
   }
   onNext() {
-    this.dataService.updateDockerFile(this.dockerfilePreview);
-    this.dataService.updateDockerCompose(this.dockerComposePreview);
-    this.dataService.updateDockerCommand(this.dockerRunCommand);
+    this.updateAllSignals();
+    this.next.emit();
 
     this.router.navigate(['/securite']);
   }

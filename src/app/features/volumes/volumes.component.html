@@ -21,7 +21,7 @@
             styleClass="p-button-primary"
           ></p-button>
         </div>
-        <ng-container *ngIf="volumes.length === 0">
+        <ng-container *ngIf="volumes().length === 0">
           <div class="init-content">
             <i class="pi pi-inbox mat-icon-colored"></i>
             <div class="empty-msg">{{'VOLUMES.PMT_EMPTY' | translate }}</div>
@@ -34,9 +34,9 @@
             ></p-button>
           </div>
         </ng-container>
-        <ng-container *ngIf="volumes.length > 0">
+        <ng-container *ngIf="volumes().length > 0">
           <div class="volumes-list">
-            <p-card *ngFor="let v of volumes; let i = index" class="volume-entry-card">
+            <p-card *ngFor="let v of volumes(); let i = index" class="volume-entry-card">
               <div class="volume-header">
                 <span class="volume-tag">Volume {{ i+1 }}</span>
                 <button  pButton icon="pi pi-trash" (click)="removeVolume(i)" class="p-button-rounded p-button-text" aria-label="Supprimer"></button>
@@ -130,17 +130,17 @@
     <!-- PREVIEW -->
     <div class="right-side">
       <dockerfile-preview
-            [content]="dockerfilePreview"
+            [content]="dockerfilePreview()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></dockerfile-preview>
         <docker-compose-preview
-            [content]="dockerComposePreview"
+            [content]="dockerComposePreview()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></docker-compose-preview>
         <docker-command-preview
-            [content]="dockerRunCommand"
+            [content]="dockerRunCommand()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></docker-command-preview>

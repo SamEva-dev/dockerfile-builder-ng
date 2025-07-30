@@ -38,11 +38,11 @@
           ></p-button>
         </div>
 
-        <ng-container *ngIf="instructions.length > 0">
+        <ng-container *ngIf="instructions().length > 0">
         
         <div class="instructions-list">
           <p-card
-            *ngFor="let step of instructions; let i = index"
+            *ngFor="let step of instructions(); let i = index"
             class="instruction-card"
           >
             <ng-template pTemplate="title">
@@ -59,7 +59,7 @@
               <p-select
                 id="type-{{i}}"
                 [options]="instructionTypes"
-                [(ngModel)]="instructions[i].type"
+                [(ngModel)]="instructions()[i].type"
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Sélectionner une instruction"
@@ -79,7 +79,8 @@
               <input
                 pInputText
                 id="content-{{i}}"
-                [(ngModel)]="instructions[i].content"
+                [(ngModel)]="instructions()[i].content"
+                (ngModelChange)="onInstructionChange()"
                 autocomplete="off"
                 placeholder="/app, NODE_ENV=dev, etc."
               />
@@ -89,7 +90,8 @@
               <input
                 pInputText
                 id="desc-{{i}}"
-                [(ngModel)]="instructions[i].description"
+                [(ngModel)]="instructions()[i].description"
+                (ngModelChange)="onInstructionChange()"
                 autocomplete="off"
                 placeholder="{{ 'INSTRUCTION.DESCRIPTION_PLACEHOLDER' | translate }}"
               />
@@ -122,17 +124,17 @@
     <!-- COLONNE DROITE : APERCU DOCKERFILE -->
     <div class="right-side">
      <dockerfile-preview
-            [content]="dockerfilePreview"
+            [content]="dockerfilePreview()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></dockerfile-preview>
         <docker-compose-preview
-            [content]="dockerComposePreview"
+            [content]="dockerComposePreview()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></docker-compose-preview>
         <docker-command-preview
-            [content]="dockerRunCommand"
+            [content]="dockerRunCommand()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></docker-command-preview>

@@ -12,11 +12,11 @@
         <div class="subtitle">{{ 'CONFIG.BASE.DESC' | translate }}</div>
         <div class="form-vertical">
           <label>{{ 'CONFIG.BASE.WORKDIR' | translate }}</label>
-          <input pInputText [(ngModel)]="workdir" />
+          <input pInputText [(ngModel)]="workdir" (ngModelChange)="onInstructionChange()"/>
           <label>{{ 'CONFIG.BASE.USER' | translate }}</label>
-          <input pInputText [(ngModel)]="user" placeholder="node, www-data, 1001..."/>
+          <input pInputText [(ngModel)]="user" placeholder="node, www-data, 1001..." (ngModelChange)="onInstructionChange()"/>
           <label>{{ 'CONFIG.BASE.SHELL' | translate }}</label>
-          <input pInputText [(ngModel)]="shell"  placeholder="[bin/batch,-c]"/>
+          <input pInputText [(ngModel)]="shell"  placeholder="[bin/batch,-c]" (ngModelChange)="onInstructionChange()"/>
           <label>{{ 'CONFIG.BASE.STOPSIGNAL' | translate }}</label>
           <p-select
             [options]="stopsignalOptions"
@@ -24,6 +24,7 @@
             optionLabel="label"
             optionValue="value"
             placeholder="SIGTERM"
+            (ngModelChange)="onInstructionChange()"
             />
         </div>
       </p-card>
@@ -36,10 +37,10 @@
         </ng-template>
         <div class="subtitle">{{ 'CONFIG.ENV.DESC' | translate }}</div>
         <div class="env-list">
-          <div *ngFor="let env of envVars; let i = index" class="env-row">
-            <input pInputText [(ngModel)]="env.key" class="env-key" placeholder="KEY"/>
+          <div *ngFor="let env of envVars(); let i = index" class="env-row">
+            <input pInputText [(ngModel)]="env.key" class="env-key" placeholder="KEY" (ngModelChange)="onInstructionChange()"/>
             <span>=</span>
-            <input pInputText [(ngModel)]="env.value" class="env-value" placeholder="value"/>
+            <input pInputText [(ngModel)]="env.value" class="env-value" placeholder="value" (ngModelChange)="onInstructionChange()"/>
             <button  pButton icon="pi pi-trash" (click)="removeEnv(i)" class="p-button-rounded p-button-text" aria-label="Supprimer"></button>
           </div>
         </div>
@@ -56,10 +57,10 @@
         </ng-template>
         <div class="subtitle">{{ 'CONFIG.LABEL.DESC' | translate }}</div>
         <div class="env-list">
-          <div *ngFor="let label of labels; let i = index" class="env-row">
-            <input pInputText [(ngModel)]="label.key" class="env-key" placeholder="maintainer"/>
+          <div *ngFor="let label of labels(); let i = index" class="env-row">
+            <input pInputText [(ngModel)]="label.key" class="env-key" placeholder="maintainer" (ngModelChange)="onInstructionChange()"/>
             <span>=</span>
-            <input pInputText [(ngModel)]="label.value" class="env-value" placeholder="email"/>
+            <input pInputText [(ngModel)]="label.value" class="env-value" placeholder="email" (ngModelChange)="onInstructionChange()"/>
             <button  pButton icon="pi pi-trash" (click)="removeLabel(i)" class="p-button-rounded p-button-text btn-blue-right" aria-label="Supprimer"></button>
           </div>
         </div>
@@ -77,26 +78,26 @@
         <div class="subtitle">{{ 'CONFIG.HEALTH.DESC' | translate }}</div>
         <div class="form-vertical">
           <div class="switch-row">
-            <p-toggleswitch  [(ngModel)]="healthcheckEnabled"></p-toggleswitch >
+            <p-toggleswitch  [(ngModel)]="healthcheckEnabled" (ngModelChange)="onInstructionChange()"></p-toggleswitch >
             <span>{{ 'CONFIG.HEALTH.ENABLED' | translate }}</span>
           </div>
           <div *ngIf="healthcheckEnabled">
             <div class="command" style="display: grid;">
             <label>{{ 'CONFIG.HEALTH.CMD' | translate }}</label>
-            <input pInputText [(ngModel)]="healthCmd" />
+            <input pInputText [(ngModel)]="healthCmd" (ngModelChange)="onInstructionChange()"/>
             </div>
             <div class="health-fields">
               <div>
                 <label>{{ 'CONFIG.HEALTH.INTERVAL' | translate }}</label>
-                <input pInputText [(ngModel)]="healthInterval" />
+                <input pInputText [(ngModel)]="healthInterval" (ngModelChange)="onInstructionChange()" />
               </div>
               <div>
                 <label>{{ 'CONFIG.HEALTH.TIMEOUT' | translate }}</label>
-                <input pInputText [(ngModel)]="healthTimeout" />
+                <input pInputText [(ngModel)]="healthTimeout" (ngModelChange)="onInstructionChange()"/>
               </div>
               <div>
                 <label>{{ 'CONFIG.HEALTH.RETRIES' | translate }}</label>
-                <input pInputText type="number" [(ngModel)]="healthRetries" />
+                <input pInputText type="number" [(ngModel)]="healthRetries" (ngModelChange)="onInstructionChange()"/>
               </div>
             </div>
           </div>
@@ -124,17 +125,17 @@
     <!-- COLONNE DROITE : PREVIEW -->
     <div class="right-side">
       <dockerfile-preview
-            [content]="dockerfilePreview"
+            [content]="dockerfilePreview()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></dockerfile-preview>
         <docker-compose-preview
-            [content]="dockerComposePreview"
+            [content]="dockerComposePreview()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></docker-compose-preview>
         <docker-command-preview
-            [content]="dockerRunCommand"
+            [content]="dockerRunCommand()"
             (copy)="onCopyDockerfile()"
             (download)="onDownloadDockerfile()"
         ></docker-command-preview>

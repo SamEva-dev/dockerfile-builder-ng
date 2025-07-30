@@ -19,26 +19,27 @@
         </ng-template>
         <div class="subtitle">{{ 'USER.EXEC_DESC' | translate }}</div>
         <div class="switch-row">
-          <p-toggleswitch [(ngModel)]="createUser"></p-toggleswitch>
+          <p-toggleswitch [(ngModel)]="createUser" (ngModelChange)="updateAllSignals()"></p-toggleswitch>
           <span>{{ 'USER.EXEC_CREATE' | translate }}</span>
         </div>
-        <ng-container *ngIf="!createUser">
+        <ng-container *ngIf="!createUser()">
            <div class="existing-user" style="display: grid;">
           <label>{{ 'USER.EXEC_EXISTING' | translate }}</label>
           <input
             pInputText
-            [(ngModel)]="selectedExistingUser"
+            [ngModel]="selectedExistingUser()"
             [placeholder]="'USER.EXEC_PLACEHOLDER' | translate"
+            (ngModelChange)="selectedExistingUser.set($event);updateAllSignals()"
           />
           </div>
           <div class="user-suggestions">
-            <span *ngFor="let user of existingUsers" (click)="selectedExistingUser = user" class="suggest-btn">{{ user }}</span>
+            <span *ngFor="let user of existingUsers" (click)="selectedExistingUser() == user" class="suggest-btn">{{ user }}</span>
           </div>
         </ng-container>
       </p-card>
 
       <!-- CRÉATION D'UTILISATEUR -->
-      <p-card *ngIf="createUser" class="section-card user-create-card">
+      <p-card *ngIf="createUser()" class="section-card user-create-card">
         <ng-template pTemplate="title">
             <i class="pi pi-user-plus mat-icon-bordered-outline"></i>
           {{ 'USER.CREATE_TITLE' | translate }}
@@ -50,22 +51,22 @@
             <p-select 
                 [options]="userTypes" 
                 [(ngModel)]="userType"
-                (onChange)="userType === 'alpine' ? shell = 'sh' : shell = 'sh'"
+                (ngModelChange)="updateAllSignals()"
             ></p-select>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>{{ 'USER.USERNAME' | translate }}</label>
-            <input pInputText [(ngModel)]="username" placeholder="appuser"/>
+            <input pInputText [(ngModel)]="username" placeholder="appuser" (ngModelChange)="updateAllSignals()"/>
           </div>
           <div class="form-group">
             <label>{{ 'USER.UID' | translate }}</label>
-            <input pInputText type="number" [(ngModel)]="uid" [readonly]="isDebianUser"/>
+            <input pInputText type="number" [ngModel]="uid()" [readonly]="isDebianUser()" (ngModelChange)="uid.set($event);updateAllSignals()"/>
           </div>
           <div class="form-group">
             <label>{{ 'USER.GID' | translate }}</label>
-            <input pInputText type="number" [(ngModel)]="gid" [readonly]="isDebianUser"/>
+            <input pInputText type="number" [ngModel]="gid()" [readonly]="isDebianUser()" (ngModelChange)="gid.set($event);updateAllSignals()"/>
           </div>
           <div class="form-group">
             <label>{{ 'USER.SHELL' | translate }}</label>
@@ -75,13 +76,14 @@
             optionLabel="label"
             optionValue="value"
             placeholder="sf"
+            (ngModelChange)="updateAllSignals()"
             />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>{{ 'USER.HOME' | translate }}</label>
-            <input pInputText [(ngModel)]="home" placeholder="/home/appuser" />
+            <input pInputText [(ngModel)]="home" placeholder="/home/appuser" (ngModelChange)="updateAllSignals()"/>
           </div>
         </div>
       </p-card>
@@ -123,17 +125,17 @@
     <!-- COLONNE DROITE -->
     <div class="right-side">
       <dockerfile-preview
-          [content]="dockerfilePreview"
+          [content]="dockerfilePreview()"
           (copy)="onCopyDockerfile()"
           (download)="onDownloadDockerfile()"
       ></dockerfile-preview>
       <docker-compose-preview
-          [content]="dockerComposePreview"
+          [content]="dockerComposePreview()"
           (copy)="onCopyDockerfile()"
           (download)="onDownloadDockerfile()"
       ></docker-compose-preview>
       <docker-command-preview
-          [content]="dockerRunCommand"
+          [content]="dockerRunCommand()"
           (copy)="onCopyDockerfile()"
           (download)="onDownloadDockerfile()"
       ></docker-command-preview>

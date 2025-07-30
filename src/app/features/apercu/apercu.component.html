@@ -1,0 +1,86 @@
+<div class="final-preview-layout">
+  <!-- COLONNE GAUCHE -->
+  <div class="summary-panel">
+    <h2 class="summary-title"><i class="pi pi-eye"></i> Aperçu final</h2>
+    <div class="summary-desc">Vérifiez et téléchargez votre configuration Docker complète</div>
+
+    <!-- Résumé -->
+    <div class="resume-block">
+      <div class="resume-title"><i class="pi pi-list"></i> Résumé de configuration</div>
+      <ul class="resume-list">
+        <li><span>Image de base</span> <strong>{{ summary().image }}</strong></li>
+        <li><span>Utilisateur</span> <strong>{{ summary().user }}</strong></li>
+        <li><span>Répertoire de travail</span> <strong>{{ summary().workdir }}</strong></li>
+        <li><span>Ports exposés</span> <strong>{{ summary().ports.join(', ') }}</strong></li>
+        <li><span>Volumes</span> <strong>{{ summary().volumes.join(', ') }}</strong></li>
+        <li><span>Variables d'env</span> <strong>{{ summary().env.join(', ') }}</strong></li>
+        <li><span>Healthcheck</span> <strong>{{ summary().health }}</strong></li>
+        <li><span>Sécurité</span> <strong>{{ summary().security }}</strong></li>
+      </ul>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="actions-block">
+      <button pButton type="button" class="action-btn download-btn" icon="pi pi-download"
+        label="Télécharger Dockerfile"
+        (click)="download(dockerfile(), 'Dockerfile')"></button>
+      <button pButton type="button" class="action-btn download-btn btn-blue-right" icon="pi pi-download"
+        label="Télécharger docker-compose.yml"
+        (click)="download(compose(), 'docker-compose.yml')"></button>
+      <button pButton type="button" class="action-btn copy-btn btn-blue-right" icon="pi pi-copy"
+        label="Copier les commandes"
+        (click)="copy(cli())"></button>
+    </div>
+    <div class="bottom-actions">
+        <p-button 
+            label="{{ 'COMMON.BACK_VOLUMES' | translate }}" 
+            icon="pi pi-arrow-left"
+            class="nav-btn nav-btn-prev"
+            (click)="onPrevious()"
+            severity="secondary"/>
+        <p-button 
+            label="{{ 'COMMON.FINALEXPORT' | translate }}" 
+            (click)="onNext()"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            class="nav-btn nav-btn-next btn-blue-right"
+            />
+      </div>
+    
+  </div>
+  
+
+  <!-- COLONNE DROITE -->
+  <div class="preview-panel">
+    <p-tabs>
+      <p-tabpanels header="Dockerfile">
+        <div class="code-header">
+          <i class="pi pi-eye"></i> Aperçu Dockerfile
+          <button pButton class="mini-btn" icon="pi pi-copy"
+            pTooltip="Copier" tooltipPosition="left"
+            (click)="copy(dockerfile())"></button>
+        </div>
+        <pre class="code-preview">{{ dockerfile() }}</pre>
+      </p-tabpanels>
+      <p-tabpanels header="Docker Compose">
+        <div class="code-header">
+          <i class="pi pi-eye"></i> Aperçu docker-compose.yml
+          <button pButton class="mini-btn" icon="pi pi-copy"
+            pTooltip="Copier" tooltipPosition="left"
+            (click)="copy(compose())"></button>
+        </div>
+        <pre class="code-preview">{{ compose() }}</pre>
+      </p-tabpanels>
+      <p-tabpanels header="Commandes">
+        <div class="code-header">
+          <i class="pi pi-eye"></i> Commandes Docker
+          <button pButton class="mini-btn" icon="pi pi-copy"
+            pTooltip="Copier" tooltipPosition="left"
+            (click)="copy(cli())"></button>
+        </div>
+        <pre class="code-preview">{{ cli() }}</pre>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+  
+</div>

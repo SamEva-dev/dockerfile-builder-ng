@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -18,8 +18,19 @@ import { DockerDataService } from '../../core/services/docker-data.service';
 import { Router } from '@angular/router';
 import { DockerComposePreviewComponent } from '../../shared/components/docker-compose-preview/docker-compose-preview.component';
 import { DockerCommandPreviewComponent } from "../../shared/components/docker-command-preview/docker-command-preview.component";
+import { DockerGeneratorService } from '../../core/services/docker-generator.service';
 
 interface KeyValue { key: string; value: string; }
+
+// Pour select stopsignal
+const STOPSIGNAL_OPTIONS = [
+  { label: 'SIGTERM', value: 'SIGTERM' },
+  { label: 'SIGKILL', value: 'SIGKILL' },
+  { label: 'SIGINT', value: 'SIGINT' },
+];
+
+interface EnvVar { key: string; value: string; }
+interface Label { key: string; value: string; }
 
 @Component({
   selector: 'app-configuration',
@@ -43,195 +54,179 @@ interface KeyValue { key: string; value: string; }
     DockerCommandPreviewComponent
 ],
   templateUrl: './configuration.component.html',
-  styleUrl: './configuration.component.scss'
+  styleUrl: './configuration.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConfigurationComponent {
-constructor(translate: TranslateService, 
-  private dataService: DockerDataService, 
-private router: Router ) {}
+private translate = inject(TranslateService)
+  private dockerService = inject(DockerGeneratorService)
+  private router = inject(Router)
 
-   // Données du Dockerfile précédant (étape précédente, instructions…)
-  @Input() baseDockerfile: string = '';
+   // --- Signaux pour chaque champ ---
+  workdir = signal<string>('/app');
+  user = signal<string>('appuser');
+  shell = signal<string>('');
+  stopsignal = signal<string>('SIGTERM');
 
-  // Bloc config de base
-  workdir = '/app';
-  user = '';
-  shell = '';
-  
-  stopsignalOptions = [
-  { label: 'SIGTERM (par défaut)', value: 'SIGTERM' },
-  { label: 'SIGINT', value: 'SIGINT' },
-  { label: 'SIGKILL', value: 'SIGKILL' },
-  { label: 'SIGUSR1', value: 'SIGUSR1' },
-  { label: 'SIGUSR2', value: 'SIGUSR2' },
-  { label: '', value: '' }
-];
-stopsignal = 'SIGTERM'; // valeur par défaut
-
-
-  // Variables d'environnement dynamiques
-  envVars: KeyValue[] = [{ key: 'NODE_ENV', value: 'production' }];
-
-  addEnv() { this.envVars.push({ key: '', value: '' }); }
-  removeEnv(i: number) { this.envVars.splice(i, 1); }
-
-  // Labels dynamiques
-  labels: KeyValue[] = [{ key: 'maintainer', value: 'votre-email@example.com' }];
-
-  addLabel() { this.labels.push({ key: '', value: '' }); }
-  removeLabel(i: number) { this.labels.splice(i, 1); }
+  envVars = signal<EnvVar[]>([]);
+  labels = signal<Label[]>([]);
 
   // Healthcheck
-  healthcheckEnabled = false;
-  healthCmd = 'curl -f http://localhost:3000/ || exit 1';
-  healthInterval = '30s';
-  healthTimeout = '3s';
-  healthRetries = 3;
+  healthcheckEnabled = signal<boolean>(false);
+  healthCmd = signal<string>('curl -f http://localhost:3000/health || exit 1');
+  healthInterval = signal<string>('30s');
+  healthTimeout = signal<string>('10s');
+  healthRetries = signal<number>(3);
 
-  // Génération du Dockerfile preview
-  get dockerfilePreview(): string {
-    let out = this.baseDockerfile;
+  stopsignalOptions = STOPSIGNAL_OPTIONS;
 
-    // Config de base
-    if (this.workdir)
-      out += `\n\n# Set the working directory\nWORKDIR ${this.workdir}`;
-    // ENV
-    if (this.envVars.length)
-      out += `\n\n# Environment variables`;
-    for (let env of this.envVars) {
-      if (env.key && env.value)
-        out += `\nENV ${env.key}=${env.value}`;
-    }
-    // LABELS
-    if (this.labels.length)
-      out += `\n\n# Labels and metadata`;
-    for (let l of this.labels) {
-      if (l.key && l.value)
-        out += `\nLABEL ${l.key}="${l.value}"`;
-    }
-    // USER
-    if (this.user)
-      out += `\n\n# Execution user\nUSER ${this.user}`;
-    // SHELL
-    if (this.shell)
-      out += `\n\n# Default Shell\nSHELL ${this.shell}`;
-    // STOP SIGNAL
-    if (this.stopsignal)
-      out += `\n\n# Stop signal\nSTOPSIGNAL ${this.stopsignal}`;
-    // Healthcheck
-    if (this.healthcheckEnabled && this.healthCmd)
-      out += `\n\n# Health check\nHEALTHCHECK --interval=${this.healthInterval} --timeout=${this.healthTimeout} --retries=${this.healthRetries} CMD ${this.healthCmd}`;
-    return out.trim();
+  // --- Navigation Wizard ---
+  @Output() previous = new EventEmitter<void>();
+  @Output() next = new EventEmitter<void>();
+
+  // --- Preview live ---
+  dockerfilePreview = this.dockerService.dockerfilePreview;
+  dockerComposePreview = this.dockerService.composePreview;
+  dockerRunCommand = this.dockerService.cliPreview;
+
+  // ENV management
+  addEnv() {
+    this.envVars.set([...this.envVars(), { key: '', value: '' }]);
+    this.updateAllSignals();
+  }
+  removeEnv(index: number) {
+    const updated = [...this.envVars()];
+    updated.splice(index, 1);
+    this.envVars.set(updated);
+    this.updateAllSignals();
   }
 
-  get dockerComposePreview(): string {
-  let imageLine = this.baseDockerfile.split('\n')[0]; // ex: FROM node:20
-  const image = imageLine.replace('FROM ', '').trim();
-
-  let out = `version: '3.8'
-services:
-  app:
-    image: ${image}`;
-
-  if (this.workdir) {
-    out += `\n    working_dir: ${this.workdir}`;
+  // LABEL management
+  addLabel() {
+    this.labels.set([...this.labels(), { key: '', value: '' }]);
+    this.updateAllSignals();
+  }
+  removeLabel(index: number) {
+    const updated = [...this.labels()];
+    updated.splice(index, 1);
+    this.labels.set(updated);
+    this.updateAllSignals();
   }
 
-  if (this.envVars.length) {
-    out += `\n    environment:`;
-    for (let env of this.envVars) {
-      if (env.key && env.value) {
-        out += `\n      - ${env.key}=${env.value}`;
-      }
-    }
+  // Healthcheck toggle/edition
+  onToggleHealthcheck() {
+    this.healthcheckEnabled.set(!this.healthcheckEnabled());
+    this.updateAllSignals();
   }
 
-  if (this.labels.length) {
-    out += `\n    labels:`;
-    for (let l of this.labels) {
-      if (l.key && l.value) {
-        out += `\n      ${l.key}: "${l.value}"`;
-      }
-    }
+  // Appelé sur tout changement (liaison ngModelChange à ajouter dans le HTML si besoin)
+  updateAllSignals() {
+
+    this.generateFileFromInstructions();
+    this.generateComposeFromInstructions();
+    this.generateCommandFromInstructions();
+    
   }
 
-  if (this.user) {
-    out += `\n    user: "${this.user}"`;
+  generateFileFromInstructions(){
+    const base = this.dockerService.dockerfile();
+    this.dockerService.updateDockerfile({
+      ...(base || {}),
+      workdir: this.workdir(),
+      shell: this.shell(),
+      Stopsignal: this.stopsignal(),
+      healthcheck: this.healthcheckEnabled() ? {
+        test: [ this.healthCmd()],
+        interval: this.healthInterval(),
+        timeout: this.healthTimeout(),
+        retries: this.healthRetries()
+      } : undefined,
+      user:{
+        username: this.user(),
+        uid: undefined, // Optionnel, peut être ajouté si nécessaire
+        gid: undefined  // Optionnel, peut être ajouté si nécessaire
+      },
+
+      //stopsignal: this.stopsignal(),
+      environment: Object.fromEntries(this.envVars().filter(e => e.key).map(e => [e.key, e.value])),
+      labels: Object.fromEntries(this.labels().filter(l => l.key).map(l => [l.key, l.value])),
+    });
+
   }
 
-  if (this.shell) {
-    out += `\n    entrypoint: [ "${this.shell}" ]`;
+  generateComposeFromInstructions(){
+    const baseCompose = this.dockerService.compose();
+    let services = baseCompose?.services ?? {};
+      services = {
+        ...services,
+        web: {
+          ...services['web'],
+          environment: Object.fromEntries(this.envVars().filter(e => e.key).map(e => [e.key, e.value])),
+          labels: Object.fromEntries(this.labels().filter(l => l.key).map(l => [l.key, l.value])),
+          healthcheck: this.healthcheckEnabled() ? {
+            test: ['CMD', this.healthCmd()],
+            interval: this.healthInterval(),
+            timeout: this.healthTimeout(),
+            retries: this.healthRetries()
+          } : undefined,
+          working_dir: this.workdir(),
+          user: this.user(),
+          stop_signal: this.stopsignal()
+        }
+      };
+    this.dockerService.updateCompose({
+      ...(baseCompose || {}),
+      services
+    });
+
   }
 
-  if (this.stopsignal) {
-    out += `\n    stop_signal: ${this.stopsignal}`;
-  }
+  generateCommandFromInstructions() {
+  const baseCli = this.dockerService.cli();
+  console.log('Mise à jour CLI avec instructions:', baseCli);
 
-  if (this.healthcheckEnabled && this.healthCmd) {
-    out += `\n    healthcheck:
-      test: [ "CMD", "${this.healthCmd}" ]
-      interval: ${this.healthInterval}
-      timeout: ${this.healthTimeout}
-      retries: ${this.healthRetries}`;
-  }
+  const environment = Object.fromEntries(this.envVars().filter(e => e.key).map(e => [e.key, e.value]));
+  const labels = Object.fromEntries(this.labels().filter(l => l.key).map(l => [l.key, l.value]));
+  const user = this.user();
 
-  return out.trim();
+  const updatedRunCommands =
+    (baseCli?.runCommands?.length ?? 0) > 0
+      ? baseCli?.runCommands?.map(cmd => ({
+          ...cmd,
+          environment,
+          labels,
+          user
+        }))
+      : [
+          {
+            environment,
+            labels,
+            user
+          }
+        ];
+
+  this.dockerService.updateCLI({
+    ...(baseCli || {}),
+    runCommands: updatedRunCommands
+  });
 }
 
-get dockerRunCommand(): string {
-  let imageLine = this.baseDockerfile.split('\n')[0]; // FROM xxx
-  const image = imageLine.replace('FROM ', '').trim();
 
-  if (!image) return '';
-
-  let cmd = `docker run --name custom-container`;
-
-  if (this.workdir) {
-    cmd += ` -w ${this.workdir}`;
+  onInstructionChange(){
+    console.log('ConfigurationComponent: onInstructionChange called');
+    this.updateAllSignals();
   }
 
-  for (let env of this.envVars) {
-    if (env.key && env.value) {
-      cmd += ` -e ${env.key}=${env.value}`;
-    }
-  }
-
-  for (let l of this.labels) {
-    if (l.key && l.value) {
-      cmd += ` --label ${l.key}="${l.value}"`;
-    }
-  }
-
-  if (this.user) {
-    cmd += ` --user ${this.user}`;
-  }
-
-  if (this.stopsignal) {
-    cmd += ` --stop-signal=${this.stopsignal}`;
-  }
-
-  if (this.healthcheckEnabled && this.healthCmd) {
-    cmd += ` --health-cmd="${this.healthCmd}" --health-interval=${this.healthInterval} --health-timeout=${this.healthTimeout} --health-retries=${this.healthRetries}`;
-  }
-
-  if (this.shell) {
-    cmd += ` --entrypoint ${this.shell}`;
-  }
-
-  cmd += ` ${image}`;
-
-  return cmd.trim();
-}
 
 
 
   onCopyDockerfile() {
     if (this.dockerfilePreview)
-      navigator.clipboard.writeText(this.dockerfilePreview);
+      navigator.clipboard.writeText(this.dockerfilePreview());
   }
   onDownloadDockerfile() {
     if (!this.dockerfilePreview) return;
-    const blob = new Blob([this.dockerfilePreview], { type: 'text/plain' });
+    const blob = new Blob([this.dockerfilePreview()], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -241,12 +236,12 @@ get dockerRunCommand(): string {
   }
 
    onPrevious() {
-    // Ta logique "retour" ici
+    this.previous.emit();
+    this.router.navigate(['/instructions']);
   }
   onNext() {
-    this.dataService.updateDockerFile(this.dockerfilePreview);
-    this.dataService.updateDockerCompose(this.dockerComposePreview);
-    this.dataService.updateDockerCommand(this.dockerRunCommand);
+    this.updateAllSignals();
+    this.next.emit();
 
     this.router.navigate(['/port-reseau']);
   }

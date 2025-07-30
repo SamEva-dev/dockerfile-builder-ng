@@ -219,7 +219,8 @@
     "BACK_VOLUMES": "Retour: Volumes",
     "NEXT_SECURITY": "Suivant: Sécurité",
      "BACK_USER": "Retour: Utilisateurs",
-    "NEXT_REVIEW": "Suivant: Aperçu"
+    "NEXT_REVIEW": "Suivant: Aperçu",
+    "FINALEXPORT": "Exporter le projet"
   }
 
 }

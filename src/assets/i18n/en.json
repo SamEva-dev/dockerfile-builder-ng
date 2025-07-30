@@ -218,7 +218,8 @@
   "BACK_VOLUMES": "Back: Volumes",
     "NEXT_SECURITY": "Next: Security",
      "BACK_USER": "Back: Users",
-    "NEXT_REVIEW": "Next: Preview"
+    "NEXT_REVIEW": "Next: Preview",
+    "FINALEXPORT": "Export Project"
 
   }
 

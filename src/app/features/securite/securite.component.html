@@ -20,10 +20,10 @@
         </ng-template>
         <div class="subtitle">{{ 'SECURITY.BASE_DESC' | translate }}</div>
         <div class="options-list">
-          <p-toggleswitch [(ngModel)]="readOnlyRoot" binary="true"></p-toggleswitch>
+          <p-toggleswitch [ngModel]="readOnlyRoot()" (ngModelChange)="readOnlyRoot.set($event); updateAllSignals()"binary="true"></p-toggleswitch>
           <label>{{ 'SECURITY.READONLY' | translate }}</label>
           <br>
-          <p-toggleswitch [(ngModel)]="noNewPrivs" binary="true"></p-toggleswitch>
+          <p-toggleswitch [ngModel]="noNewPrivs()" (ngModelChange)="noNewPrivs.set($event); updateAllSignals()" binary="true"></p-toggleswitch>
           <label>{{ 'SECURITY.NONEWPRIV' | translate }}</label>
         </div>
       </p-card>
@@ -36,16 +36,18 @@
         </ng-template>
         <div class="subtitle">{{ 'SECURITY.CAP_DESC' | translate }}</div>
         <div class="cap-list">
-          <div *ngFor="let cap of capabilities; let i = index" class="cap-row">
+          <div *ngFor="let cap of capabilities(); let i = index" class="cap-row">
             <p-select
               [options]="capabilityTypes"
               [(ngModel)]="cap.type"
               class="cap-type-select"
+               (ngModelChange)="updateAllSignals()"
             ></p-select>
             <p-select
               [options]="capabilityOptions"
               [(ngModel)]="cap.name"
               class="cap-name-select"
+              (ngModelChange)="updateAllSignals()"
               placeholder="{{ 'SECURITY.CAP_SELECT' | translate }}"
             ></p-select>
             <button pButton pRipple type="button" icon="pi pi-trash"
@@ -67,15 +69,15 @@
         <div class="profiles-list">
           <div class="profile-row">
             <label>Profil Seccomp</label>
-            <input pInputText [(ngModel)]="seccomp" placeholder="default profil seccomp"/>
+            <input pInputText [ngModel]="seccomp()" (ngModelChange)="seccomp.set($event); updateAllSignals()" placeholder="default profil seccomp"/>
           </div>
           <div class="profile-row">
             <label>Profil AppArmor</label>
-            <input pInputText [(ngModel)]="apparmor" placeholder="profil apparmor"/>
+            <input pInputText [ngModel]="apparmor()" (ngModelChange)="apparmor.set($event); updateAllSignals()"placeholder="profil apparmor"/>
           </div>
           <div class="profile-row">
             <label>Options SELinux</label>
-            <input pInputText [(ngModel)]="selinux" placeholder="option selinux"/>
+            <input pInputText [ngModel]="selinux()" (ngModelChange)="selinux.set($event); updateAllSignals()"placeholder="option selinux"/>
           </div>
         </div>
       </p-card>
@@ -118,17 +120,17 @@
     <!-- COLONNE DROITE -->
     <div class="right-side">
       <dockerfile-preview
-                    [content]="dockerfilePreview"
+                    [content]="dockerfilePreview()"
                     (copy)="onCopyDockerfile()"
                     (download)="onDownloadDockerfile()"
                 ></dockerfile-preview>
                 <docker-compose-preview
-                    [content]="dockerComposePreview"
+                    [content]="dockerComposePreview()"
                     (copy)="onCopyDockerfile()"
                     (download)="onDownloadDockerfile()"
                 ></docker-compose-preview>
                 <docker-command-preview
-                    [content]="dockerRunCommand"
+                    [content]="dockerRunCommand()"
                     (copy)="onCopyDockerfile()"
                     (download)="onDownloadDockerfile()"
                 ></docker-command-preview>

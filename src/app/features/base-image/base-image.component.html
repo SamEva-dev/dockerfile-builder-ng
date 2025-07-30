@@ -20,8 +20,8 @@
                 <p-card
                     *ngFor="let img of popularImages; let i = index"
                     class="image-card"
-                    [ngClass]="{ 'selected': selectedPopularIndex === i, 'inactive': customImageName }"
-                    (click)="!customImageName && selectPopular(i)"
+                    [ngClass]="{ 'selected': selectedPopularIndex() === i, 'inactive': customImageName() }"
+                    (click)="!customImageName() && selectPopular(i)"
                 >
                     <ng-template pTemplate="content">
                     <div class="image-title">{{ img.name }}</div>
@@ -64,7 +64,7 @@
                 <label for="imageTag">{{ 'BASE_IMAGE.TAG' | translate }}</label>
                 
                 <p-select
-                    [options]="dynamicTagOptions"
+                    [options]="dynamicTagOptions()"
                     [(ngModel)]="selectedTag"
                     id="imageTag"
                     (onChange)="onTagChange($event.value)"
@@ -79,7 +79,7 @@
                 </p-select>
 
                 <!-- Champ texte tag custom -->
-                <div *ngIf="selectedTag === 'personnalisé'">
+                <div *ngIf="selectedTag() === 'personnalisé'">
                     <label for="customTag">{{ 'BASE_IMAGE.TAG_PLACEHOLDER' | translate }}</label>
                     <input
                     pInputText
@@ -117,20 +117,20 @@
             <!-- COLONNE DROITE : APERCU DOCKERFILE -->
             <div class="right-side">
                 <dockerfile-preview
-                    [content]="dockerfilePreview"
-                    (copy)="onCopyDockerfile()"
-                    (download)="onDownloadDockerfile()"
-                ></dockerfile-preview>
-                <docker-compose-preview
-                    [content]="dockerComposePreview"
-                    (copy)="onCopyDockerfile()"
-                    (download)="onDownloadDockerfile()"
-                ></docker-compose-preview>
-                <docker-command-preview
-                    [content]="dockerRunCommand"
-                    (copy)="onCopyDockerfile()"
-                    (download)="onDownloadDockerfile()"
-                ></docker-command-preview>
+            [content]="dockerfilePreview()"
+            (copy)="onCopyDockerfile()"
+            (download)="onDownloadDockerfile()"
+        ></dockerfile-preview>
+        <docker-compose-preview
+            [content]="dockerComposePreview()"
+            (copy)="onCopyDockerfile()"
+            (download)="onDownloadDockerfile()"
+        ></docker-compose-preview>
+        <docker-command-preview
+            [content]="dockerRunCommand()"
+            (copy)="onCopyDockerfile()"
+            (download)="onDownloadDockerfile()"
+        ></docker-command-preview>
             </div>
         </div>
   </div>

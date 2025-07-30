@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { MatButtonModule } from '@angular/material/button';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from "@angular/material/icon";
 import { Button, ButtonModule } from "primeng/button";
 import { ButtonGroupModule } from 'primeng/buttongroup';
@@ -15,6 +15,7 @@ import { ButtonGroupModule } from 'primeng/buttongroup';
     MatButtonModule, 
     MatIconModule,
     ButtonModule,
+    RouterLink,
     ButtonGroupModule,],
   templateUrl: './accueil.component.html',
   styleUrl: './accueil.component.scss'
